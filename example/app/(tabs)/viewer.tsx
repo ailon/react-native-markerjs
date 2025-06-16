@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import { MarkerView } from '@markerjs/react-native-markerjs';
 
 const Viewer = () => {
   return (
-    <View style={styles.container}>
-      <Text>Viewer</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <MarkerView />
+    </SafeAreaView>
   );
 };
 

@@ -1,14 +1,15 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import { Renderer } from '@markerjs/react-native-markerjs';
 
-const Renderer = () => {
+const RendererPage = () => {
   return (
-    <View style={styles.container}>
-      <Text>Renderer</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <Renderer />
+    </SafeAreaView>
   );
 };
 
-export default Renderer;
+export default RendererPage;
 
 const styles = StyleSheet.create({
   container: {

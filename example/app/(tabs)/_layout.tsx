@@ -14,6 +14,9 @@ export default function TabLayout() {
           },
           default: {},
         }),
+        sceneStyle: {
+          padding: 20,
+        },
       }}
     >
       <Tabs.Screen

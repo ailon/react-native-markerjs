@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView, StyleSheet } from 'react-native';
+import { MarkerArea } from '@markerjs/react-native-markerjs';
 
 const Editor = () => {
   return (
-    <View style={styles.container}>
-      <Text>Editor</Text>
-    </View>
+    <SafeAreaView style={styles.container}>
+      <MarkerArea />
+    </SafeAreaView>
   );
 };
 

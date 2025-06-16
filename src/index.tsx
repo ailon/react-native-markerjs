@@ -1,3 +1,5 @@
-export function multiply(a: number, b: number): number {
-  return a * b;
-}
+import MarkerArea from './components/MarkerArea';
+import MarkerView from './components/MarkerView';
+import Renderer from './components/Renderer';
+
+export { MarkerArea, MarkerView, Renderer };
