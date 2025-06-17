@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import type { AnnotationState } from '../core/AnnotationState';
-import Svg, { Image } from 'react-native-svg';
+import Svg, { Image, Rect } from 'react-native-svg';
 import FrameMarker from './core/FrameMarker';
 import type { ShapeOutlineMarkerBaseState } from '../core/ShapeOutlineMarkerBaseState';
 

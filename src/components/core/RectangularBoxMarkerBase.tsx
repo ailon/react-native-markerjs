@@ -1,11 +1,11 @@
 import type React from 'react';
 import type { RectangularBoxMarkerBaseState } from '../../core/RectangularBoxMarkerBaseState';
-import MarkerBase from './MarkerBase';
+import MarkerBase, { type MarkerBaseProps } from './MarkerBase';
 import { G } from 'react-native-svg';
 
-interface RectangularBoxMarkerBaseProps extends RectangularBoxMarkerBaseState {
-  children: React.ReactNode;
-}
+interface RectangularBoxMarkerBaseProps
+  extends MarkerBaseProps,
+    RectangularBoxMarkerBaseState {}
 
 const RectangularBoxMarkerBase: React.FC<RectangularBoxMarkerBaseProps> = (
   props: RectangularBoxMarkerBaseProps
@@ -24,3 +24,4 @@ const RectangularBoxMarkerBase: React.FC<RectangularBoxMarkerBaseProps> = (
 };
 
 export default RectangularBoxMarkerBase;
+export type { RectangularBoxMarkerBaseProps };

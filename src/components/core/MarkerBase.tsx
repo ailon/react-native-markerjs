@@ -3,7 +3,7 @@ import React from 'react';
 import { G } from 'react-native-svg';
 
 interface MarkerBaseProps extends MarkerBaseState {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 const MarkerBase: React.FC<MarkerBaseProps> = ({
@@ -13,3 +13,4 @@ const MarkerBase: React.FC<MarkerBaseProps> = ({
 };
 
 export default MarkerBase;
+export type { MarkerBaseProps };
