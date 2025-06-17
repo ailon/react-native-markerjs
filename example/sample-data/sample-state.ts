@@ -19,8 +19,8 @@ export const testState: AnnotationState = {
     } as MarkerBaseState,
     {
       typeName: 'FrameMarker',
-      left: 150,
-      top: 0,
+      left: 250,
+      top: 80,
       width: 50,
       height: 50,
       strokeColor: 'red',
