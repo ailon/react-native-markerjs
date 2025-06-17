@@ -1,3 +1,4 @@
+export const markerIdSymbol = Symbol('id');
 /**
  * Represents marker's state used to save and restore state.
  *
@@ -30,4 +31,6 @@ export interface MarkerBaseState {
    * Marker's opacity.
    */
   opacity?: number;
+
+  [markerIdSymbol]?: string;
 }

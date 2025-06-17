@@ -3,18 +3,45 @@ import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
 import RectangularBoxMarkerBaseEditor from './editor/RectangularBoxMarkerBaseEditor';
 import type { RectangularBoxMarkerBaseState } from '../core/RectangularBoxMarkerBaseState';
-import { useState } from 'react';
-import type { MarkerBaseState } from '../core/MarkerBaseState';
+import { useEffect, useState } from 'react';
+import { markerIdSymbol, type MarkerBaseState } from '../core/MarkerBaseState';
+import { generateMarkerId } from '../core/markerIdGenerator';
 
 interface MarkerAreaProps {
   targetSrc: string;
   annotation: AnnotationState;
+  onAnnotationChange?: (annotation: AnnotationState) => void;
 }
 
-const MarkerArea: React.FC<MarkerAreaProps> = ({ targetSrc, annotation }) => {
-  const [selectedMarker, setSelectedMarker] = useState<MarkerBaseState | null>(
-    null
-  );
+const MarkerArea: React.FC<MarkerAreaProps> = ({
+  targetSrc,
+  annotation,
+  onAnnotationChange,
+}) => {
+  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+
+  useEffect(() => {
+    const missingIdIndex = annotation.markers.findIndex((marker) => {
+      return marker[markerIdSymbol] === undefined;
+    });
+
+    if (missingIdIndex > -1) {
+      const newMarkers = annotation.markers.map((marker) => {
+        const newMarker = {
+          ...marker,
+          [markerIdSymbol]: marker[markerIdSymbol] ?? generateMarkerId(),
+        };
+        return newMarker;
+      });
+
+      if (onAnnotationChange) {
+        onAnnotationChange({
+          ...annotation,
+          markers: newMarkers,
+        });
+      }
+    }
+  }, [onAnnotationChange, annotation]);
 
   return (
     <View style={styles.container}>
@@ -31,10 +58,10 @@ const MarkerArea: React.FC<MarkerAreaProps> = ({ targetSrc, annotation }) => {
         {annotation.markers.map((marker, index) =>
           marker.typeName === 'FrameMarker' ? (
             <RectangularBoxMarkerBaseEditor
-              key={index}
+              key={marker[markerIdSymbol] ?? index}
               marker={marker as RectangularBoxMarkerBaseState}
-              selected={selectedMarker === marker}
-              onSelect={(m) => setSelectedMarker(m)}
+              selected={selectedMarker === marker[markerIdSymbol]}
+              onSelect={(m) => setSelectedMarker(m[markerIdSymbol] ?? null)}
             />
           ) : null
         )}
