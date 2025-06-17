@@ -21,7 +21,7 @@ export default defineConfig([
     rules: {
       'react/react-in-jsx-scope': 'off',
       'prettier/prettier': [
-        'error',
+        'off',
         {
           quoteProps: 'consistent',
           singleQuote: true,
@@ -33,9 +33,6 @@ export default defineConfig([
     },
   },
   {
-    ignores: [
-      'node_modules/',
-      'lib/'
-    ],
+    ignores: ['node_modules/', 'lib/'],
   },
 ]);

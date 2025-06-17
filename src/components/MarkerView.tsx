@@ -1,9 +1,36 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import type { AnnotationState } from '../core/AnnotationState';
+import Svg, { Image } from 'react-native-svg';
+import FrameMarker from './core/FrameMarker';
+import type { ShapeOutlineMarkerBaseState } from '../core/ShapeOutlineMarkerBaseState';
 
-const MarkerView = () => {
+interface MarkerViewProps {
+  targetSrc: string;
+  annotation: AnnotationState;
+}
+
+const MarkerView: React.FC<MarkerViewProps> = ({ targetSrc, annotation }) => {
   return (
     <View style={styles.container}>
-      <Text>MarkerView</Text>
+      <Svg
+        width={annotation.width}
+        height={annotation.height}
+        viewBox={`0 0 ${annotation.width} ${annotation.height}`}
+      >
+        <Image
+          href={targetSrc}
+          width={annotation.width}
+          height={annotation.height}
+        />
+        {annotation.markers.map((marker, index) =>
+          marker.typeName === 'FrameMarker' ? (
+            <FrameMarker
+              key={index}
+              {...(marker as ShapeOutlineMarkerBaseState)}
+            />
+          ) : null
+        )}
+      </Svg>
     </View>
   );
 };
@@ -19,5 +46,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     backgroundColor: '#da61fb',
+    overflow: 'hidden',
   },
 });
