@@ -3,6 +3,8 @@ import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
 import RectangularBoxMarkerBaseEditor from './editor/RectangularBoxMarkerBaseEditor';
 import type { RectangularBoxMarkerBaseState } from '../core/RectangularBoxMarkerBaseState';
+import { useState } from 'react';
+import type { MarkerBaseState } from '../core/MarkerBaseState';
 
 interface MarkerAreaProps {
   targetSrc: string;
@@ -10,6 +12,10 @@ interface MarkerAreaProps {
 }
 
 const MarkerArea: React.FC<MarkerAreaProps> = ({ targetSrc, annotation }) => {
+  const [selectedMarker, setSelectedMarker] = useState<MarkerBaseState | null>(
+    null
+  );
+
   return (
     <View style={styles.container}>
       <Svg
@@ -27,6 +33,8 @@ const MarkerArea: React.FC<MarkerAreaProps> = ({ targetSrc, annotation }) => {
             <RectangularBoxMarkerBaseEditor
               key={index}
               marker={marker as RectangularBoxMarkerBaseState}
+              selected={selectedMarker === marker}
+              onSelect={(m) => setSelectedMarker(m)}
             />
           ) : null
         )}

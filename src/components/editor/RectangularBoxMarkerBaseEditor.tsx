@@ -3,20 +3,24 @@ import { G, Line, Rect } from 'react-native-svg';
 import type { RectangularBoxMarkerBaseState } from '../../core/RectangularBoxMarkerBaseState';
 import FrameMarker from '../core/FrameMarker';
 import Grip from './Grip';
+import MarkerBaseEditor, {
+  type MarkerBaseEditorProps,
+} from './MarkerBaseEditor';
 
-interface RectangularBoxMarkerBaseEditorProps {
+interface RectangularBoxMarkerBaseEditorProps extends MarkerBaseEditorProps {
   marker: RectangularBoxMarkerBaseState;
 }
 
 const RectangularBoxMarkerBaseEditor: React.FC<
   RectangularBoxMarkerBaseEditorProps
-> = ({ marker }) => {
+> = ({ marker, selected, onSelect }) => {
   const rotatorOffset = -30;
   return (
-    <G>
+    <MarkerBaseEditor marker={marker} onSelect={onSelect}>
       {marker.typeName === 'FrameMarker' && (
         <FrameMarker {...marker}>
-          <G>
+          {/* eslint-disable-next-line react-native/no-inline-styles */}
+          <G style={{ display: selected ? 'flex' : 'none' }}>
             {/* control box */}
             <Rect
               x="0"
@@ -48,7 +52,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
           </G>
         </FrameMarker>
       )}
-    </G>
+    </MarkerBaseEditor>
   );
 };
 
