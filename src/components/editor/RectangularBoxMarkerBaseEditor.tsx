@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { G, Line, Rect } from 'react-native-svg';
 import type { RectangularBoxMarkerBaseState } from '../../core/RectangularBoxMarkerBaseState';
 import FrameMarker from '../core/FrameMarker';
@@ -20,8 +20,17 @@ const RectangularBoxMarkerBaseEditor: React.FC<
 
   console.log(`Marker ${marker[markerIdSymbol]} left position: ${marker.left}`);
 
-  const [manipulationStartX, setManipulationStartX] = useState(marker.left);
-  const [manipulationStartY, setManipulationStartY] = useState(marker.top);
+  const manipulationStartX = useRef(0);
+  const manipulationStartY = useRef(0);
+  const isGestureActive = useRef(false);
+
+  // Keep a reference to the current marker to avoid stale closures
+  const markerRef = useRef(marker);
+
+  // Update marker ref whenever the marker prop changes
+  useEffect(() => {
+    markerRef.current = marker;
+  }, [marker]);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -31,58 +40,76 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       onMoveShouldSetPanResponder: () => false,
       onMoveShouldSetPanResponderCapture: () => false,
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       onPanResponderGrant: (evt, gestureState) => {
-        // The gesture has started. Show visual feedback so the user knows
-        // what is happening!
-        // gestureState.d{x,y} will be set to zero now
-        setManipulationStartX(marker.left);
-        setManipulationStartY(marker.top);
-        onSelect?.(marker);
+        // The gesture has started
+        const currentMarker = markerRef.current;
+        console.log(
+          `Gesture started: marker: ${currentMarker.left}, ${currentMarker.top}`
+        );
+
+        // Store the current position when gesture starts
+        manipulationStartX.current = currentMarker.left;
+        manipulationStartY.current = currentMarker.top;
+        isGestureActive.current = true;
+
+        onSelect?.(currentMarker);
       },
+
       onPanResponderMove: (evt, gestureState) => {
-        // The most recent move distance is gestureState.move{X,Y}
-        // The accumulated gesture distance since becoming responder is
-        // gestureState.d{x,y}
+        if (!isGestureActive.current) return;
+
+        const currentMarker = markerRef.current;
         console.log(`Gesture moved: ${gestureState.dx}, ${gestureState.dy}`);
+
         const movedMarker: RectangularBoxMarkerBaseState = {
-          ...marker,
-          left: manipulationStartX + gestureState.dx,
-          top: manipulationStartY + gestureState.dy,
+          ...currentMarker,
+          left: manipulationStartX.current + gestureState.dx,
+          top: manipulationStartY.current + gestureState.dy,
         };
+
         if (onMarkerChange) {
           onMarkerChange(movedMarker);
         }
       },
+
       onPanResponderTerminationRequest: () => true,
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       onPanResponderRelease: (evt, gestureState) => {
-        // The user has released all touches while this view is the
-        // responder. This typically means a gesture has succeeded
-        // const movedMarker: RectangularBoxMarkerBaseState = {
-        //   ...marker,
-        //   left: manipulationStartX + gestureState.dx,
-        //   top: manipulationStartY + gestureState.dy,
-        // };
-        // console.log(
-        //   `Gesture released: ${gestureState.dx}, ${gestureState.dy}, marker left: ${movedMarker.left}`
-        // );
-        // setManipulationStartX(movedMarker.left);
-        // setManipulationStartY(movedMarker.top);
-        // if (onMarkerChange) {
-        //   onMarkerChange(movedMarker);
-        // }
+        // The user has released all touches
+        if (!isGestureActive.current) return;
+
+        const currentMarker = markerRef.current;
+        const newLeft = manipulationStartX.current + gestureState.dx;
+        const newTop = manipulationStartY.current + gestureState.dy;
+
+        console.log(
+          `Gesture released: ${gestureState.dx}, ${gestureState.dy}, marker left: ${newLeft}`
+        );
+
+        // Update our refs to the final position for the next gesture
+        manipulationStartX.current = newLeft;
+        manipulationStartY.current = newTop;
+
+        const movedMarker: RectangularBoxMarkerBaseState = {
+          ...currentMarker,
+          left: newLeft,
+          top: newTop,
+        };
+
+        if (onMarkerChange) {
+          onMarkerChange(movedMarker);
+        }
+
+        isGestureActive.current = false;
+        console.log(`gesture state:`, gestureState);
       },
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
       onPanResponderTerminate: (evt, gestureState) => {
-        // Another component has become the responder, so this gesture
-        // should be cancelled
+        // Another component has become the responder
+        isGestureActive.current = false;
       },
-      onShouldBlockNativeResponder: () => {
-        // Returns whether this component should block native components from becoming the JS
-        // responder. Returns true by default. Is currently only supported on android.
-        return true;
-      },
+
+      onShouldBlockNativeResponder: () => true,
     })
   ).current;
 

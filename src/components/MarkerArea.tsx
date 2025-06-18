@@ -4,7 +4,7 @@ import Svg, { Image } from 'react-native-svg';
 import RectangularBoxMarkerBaseEditor from './editor/RectangularBoxMarkerBaseEditor';
 import type { RectangularBoxMarkerBaseState } from '../core/RectangularBoxMarkerBaseState';
 import { useEffect, useState } from 'react';
-import { markerIdSymbol, type MarkerBaseState } from '../core/MarkerBaseState';
+import { markerIdSymbol } from '../core/MarkerBaseState';
 import { generateMarkerId } from '../core/markerIdGenerator';
 
 interface MarkerAreaProps {
