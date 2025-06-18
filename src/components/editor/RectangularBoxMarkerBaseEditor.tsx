@@ -42,8 +42,16 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     onSelect?.(marker);
   };
   const handleResponderMove = (ev: GestureResponderEvent) => {
+    // Get absolute movement in screen coordinates
     const dx = ev.nativeEvent.pageX - manipulationStartPosition.x;
     const dy = ev.nativeEvent.pageY - manipulationStartPosition.y;
+
+    // Convert rotation to radians
+    const angle = ((marker.rotationAngle || 0) * Math.PI) / 180;
+
+    // Transform the movement according to rotation
+    const rotatedDx = dx * Math.cos(angle) + dy * Math.sin(angle);
+    const rotatedDy = -dx * Math.sin(angle) + dy * Math.cos(angle);
 
     if (onMarkerChange) {
       const updatedMarker: RectangularBoxMarkerBaseState = {
@@ -53,9 +61,33 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       if (activeGrip !== null) {
         switch (activeGrip) {
           case 'bottom-right':
-            updatedMarker.width = markerStartSize.width + dx;
-            updatedMarker.height = markerStartSize.height + dy;
+            // Calculate width and height changes
+            const widthChange = rotatedDx;
+            const heightChange = rotatedDy;
+
+            const newWidth = markerStartSize.width + widthChange;
+            const newHeight = markerStartSize.height + heightChange;
+
+            // Calculate the position adjustment needed to keep top-left corner in place
+            const widthDiff = newWidth - markerStartSize.width;
+            const heightDiff = newHeight - markerStartSize.height;
+
+            // Calculate the offset caused by rotation
+            const offsetX =
+              (widthDiff * (1 - Math.cos(angle)) +
+                heightDiff * Math.sin(angle)) /
+              2;
+            const offsetY =
+              (-widthDiff * Math.sin(angle) +
+                heightDiff * (1 - Math.cos(angle))) /
+              2;
+
+            updatedMarker.width = newWidth;
+            updatedMarker.height = newHeight;
+            updatedMarker.left = markerStartPosition.left - offsetX;
+            updatedMarker.top = markerStartPosition.top - offsetY;
             break;
+          // Add other grip cases here
         }
       } else {
         updatedMarker.left = markerStartPosition.left + dx;
