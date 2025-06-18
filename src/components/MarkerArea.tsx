@@ -62,6 +62,19 @@ const MarkerArea: React.FC<MarkerAreaProps> = ({
               marker={marker as RectangularBoxMarkerBaseState}
               selected={selectedMarker === marker[markerIdSymbol]}
               onSelect={(m) => setSelectedMarker(m[markerIdSymbol] ?? null)}
+              onMarkerChange={(m) => {
+                if (onAnnotationChange) {
+                  const updatedAnnotation = {
+                    ...annotation,
+                    markers: annotation.markers.map((mark) =>
+                      mark[markerIdSymbol] === m[markerIdSymbol]
+                        ? { ...mark, ...m }
+                        : mark
+                    ),
+                  };
+                  onAnnotationChange(updatedAnnotation);
+                }
+              }}
             />
           ) : null
         )}
