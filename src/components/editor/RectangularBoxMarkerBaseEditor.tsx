@@ -144,9 +144,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
             />
             <G>
               {/* grips */}
-              <Grip x={0} y={0} />
-              <Grip x={marker.width} y={0} />
-              <Grip x={0} y={marker.height} />
               <Grip
                 x={marker.width}
                 y={marker.height}
