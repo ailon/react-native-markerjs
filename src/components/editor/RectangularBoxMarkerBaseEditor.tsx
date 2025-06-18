@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { G, Line, Rect } from 'react-native-svg';
 import type { RectangularBoxMarkerBaseState } from '../../core/RectangularBoxMarkerBaseState';
 import FrameMarker from '../core/FrameMarker';
@@ -6,8 +6,7 @@ import Grip from './Grip';
 import MarkerBaseEditor, {
   type MarkerBaseEditorProps,
 } from './MarkerBaseEditor';
-import { PanResponder } from 'react-native';
-import { markerIdSymbol } from '../../core/MarkerBaseState';
+import { type GestureResponderEvent } from 'react-native';
 
 interface RectangularBoxMarkerBaseEditorProps extends MarkerBaseEditorProps {
   marker: RectangularBoxMarkerBaseState;
@@ -18,106 +17,52 @@ const RectangularBoxMarkerBaseEditor: React.FC<
 > = ({ marker, selected, onSelect, onMarkerChange }) => {
   const rotatorOffset = -30;
 
-  console.log(`Marker ${marker[markerIdSymbol]} left position: ${marker.left}`);
+  const [markerStartPosition, setMarkerStartPosition] = useState({
+    left: marker.left,
+    top: marker.top,
+  });
+  const [manipulationStartPosition, setManipulationStartPosition] = useState({
+    x: 0,
+    y: 0,
+  });
 
-  const manipulationStartX = useRef(0);
-  const manipulationStartY = useRef(0);
-  const isGestureActive = useRef(false);
+  const handleResponderGrant = (ev: GestureResponderEvent) => {
+    setManipulationStartPosition({
+      x: ev.nativeEvent.pageX,
+      y: ev.nativeEvent.pageY,
+    });
 
-  // Keep a reference to the current marker to avoid stale closures
-  const markerRef = useRef(marker);
+    onSelect?.(marker);
+  };
+  const handleResponderMove = (ev: GestureResponderEvent) => {
+    const dx = ev.nativeEvent.pageX - manipulationStartPosition.x;
+    const dy = ev.nativeEvent.pageY - manipulationStartPosition.y;
 
-  // Update marker ref whenever the marker prop changes
-  useEffect(() => {
-    markerRef.current = marker;
-  }, [marker]);
-
-  const panResponder = useRef(
-    PanResponder.create({
-      // Ask to be the responder:
-      onStartShouldSetPanResponder: () => true,
-      onStartShouldSetPanResponderCapture: () => true,
-      onMoveShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponderCapture: () => false,
-
-      onPanResponderGrant: (evt, gestureState) => {
-        // The gesture has started
-        const currentMarker = markerRef.current;
-        console.log(
-          `Gesture started: marker: ${currentMarker.left}, ${currentMarker.top}`
-        );
-
-        // Store the current position when gesture starts
-        manipulationStartX.current = currentMarker.left;
-        manipulationStartY.current = currentMarker.top;
-        isGestureActive.current = true;
-
-        onSelect?.(currentMarker);
-      },
-
-      onPanResponderMove: (evt, gestureState) => {
-        if (!isGestureActive.current) return;
-
-        const currentMarker = markerRef.current;
-        console.log(`Gesture moved: ${gestureState.dx}, ${gestureState.dy}`);
-
-        const movedMarker: RectangularBoxMarkerBaseState = {
-          ...currentMarker,
-          left: manipulationStartX.current + gestureState.dx,
-          top: manipulationStartY.current + gestureState.dy,
-        };
-
-        if (onMarkerChange) {
-          onMarkerChange(movedMarker);
-        }
-      },
-
-      onPanResponderTerminationRequest: () => true,
-
-      onPanResponderRelease: (evt, gestureState) => {
-        // The user has released all touches
-        if (!isGestureActive.current) return;
-
-        const currentMarker = markerRef.current;
-        const newLeft = manipulationStartX.current + gestureState.dx;
-        const newTop = manipulationStartY.current + gestureState.dy;
-
-        console.log(
-          `Gesture released: ${gestureState.dx}, ${gestureState.dy}, marker left: ${newLeft}`
-        );
-
-        // Update our refs to the final position for the next gesture
-        manipulationStartX.current = newLeft;
-        manipulationStartY.current = newTop;
-
-        const movedMarker: RectangularBoxMarkerBaseState = {
-          ...currentMarker,
-          left: newLeft,
-          top: newTop,
-        };
-
-        if (onMarkerChange) {
-          onMarkerChange(movedMarker);
-        }
-
-        isGestureActive.current = false;
-        console.log(`gesture state:`, gestureState);
-      },
-
-      onPanResponderTerminate: (evt, gestureState) => {
-        // Another component has become the responder
-        isGestureActive.current = false;
-      },
-
-      onShouldBlockNativeResponder: () => true,
-    })
-  ).current;
+    if (onMarkerChange) {
+      const movedMarker: RectangularBoxMarkerBaseState = {
+        ...marker,
+        left: markerStartPosition.left + dx,
+        top: markerStartPosition.top + dy,
+      };
+      onMarkerChange(movedMarker);
+    }
+  };
+  const handleResponderRelease = () => {
+    setMarkerStartPosition({
+      left: marker.left,
+      top: marker.top,
+    });
+    setManipulationStartPosition({ x: 0, y: 0 });
+  };
 
   return (
     <MarkerBaseEditor
       marker={marker}
       onSelect={onSelect}
-      {...panResponder.panHandlers}
+      onResponderGrant={handleResponderGrant}
+      onResponderMove={handleResponderMove}
+      onResponderRelease={handleResponderRelease}
+      onResponderTerminate={handleResponderRelease}
     >
       {marker.typeName === 'FrameMarker' && (
         <FrameMarker {...marker}>

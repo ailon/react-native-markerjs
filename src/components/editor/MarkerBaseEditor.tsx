@@ -19,7 +19,11 @@ const MarkerBaseEditor: React.FC<MarkerBaseEditorProps> = ({
   onSelect,
   ...props
 }: MarkerBaseEditorProps) => {
-  return <G {...props}>{children}</G>;
+  return (
+    <G onStartShouldSetResponder={() => true} {...props}>
+      {children}
+    </G>
+  );
 };
 
 export default MarkerBaseEditor;
