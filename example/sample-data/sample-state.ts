@@ -16,6 +16,7 @@ export const testState: AnnotationState = {
       strokeColor: 'blue',
       strokeWidth: 2,
       strokeDasharray: '5,5',
+      rotationAngle: 0,
     } as MarkerBaseState,
     {
       typeName: 'FrameMarker',

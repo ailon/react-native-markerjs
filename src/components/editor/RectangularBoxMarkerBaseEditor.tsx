@@ -15,11 +15,17 @@ interface RectangularBoxMarkerBaseEditorProps extends MarkerBaseEditorProps {
 const RectangularBoxMarkerBaseEditor: React.FC<
   RectangularBoxMarkerBaseEditorProps
 > = ({ marker, selected, onSelect, onMarkerChange }) => {
-  const rotatorOffset = -30;
+  const rotatorOffset = -30 as const;
+
+  const [activeGrip, setActiveGrip] = useState<string | null>(null);
 
   const [markerStartPosition, setMarkerStartPosition] = useState({
     left: marker.left,
     top: marker.top,
+  });
+  const [markerStartSize, setMarkerStartSize] = useState({
+    width: marker.width,
+    height: marker.height,
   });
   const [manipulationStartPosition, setManipulationStartPosition] = useState({
     x: 0,
@@ -27,6 +33,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   });
 
   const handleResponderGrant = (ev: GestureResponderEvent) => {
+    console.log('Active grip:', activeGrip);
     setManipulationStartPosition({
       x: ev.nativeEvent.pageX,
       y: ev.nativeEvent.pageY,
@@ -39,18 +46,33 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     const dy = ev.nativeEvent.pageY - manipulationStartPosition.y;
 
     if (onMarkerChange) {
-      const movedMarker: RectangularBoxMarkerBaseState = {
+      const updatedMarker: RectangularBoxMarkerBaseState = {
         ...marker,
-        left: markerStartPosition.left + dx,
-        top: markerStartPosition.top + dy,
       };
-      onMarkerChange(movedMarker);
+
+      if (activeGrip !== null) {
+        switch (activeGrip) {
+          case 'bottom-right':
+            updatedMarker.width = markerStartSize.width + dx;
+            updatedMarker.height = markerStartSize.height + dy;
+            break;
+        }
+      } else {
+        updatedMarker.left = markerStartPosition.left + dx;
+        updatedMarker.top = markerStartPosition.top + dy;
+      }
+      onMarkerChange(updatedMarker);
     }
   };
   const handleResponderRelease = () => {
+    setActiveGrip(null);
     setMarkerStartPosition({
       left: marker.left,
       top: marker.top,
+    });
+    setMarkerStartSize({
+      width: marker.width,
+      height: marker.height,
     });
     setManipulationStartPosition({ x: 0, y: 0 });
   };
@@ -93,7 +115,18 @@ const RectangularBoxMarkerBaseEditor: React.FC<
               <Grip x={0} y={0} />
               <Grip x={marker.width} y={0} />
               <Grip x={0} y={marker.height} />
-              <Grip x={marker.width} y={marker.height} />
+              <Grip
+                x={marker.width}
+                y={marker.height}
+                onStartShouldSetResponder={() => {
+                  setActiveGrip('bottom-right');
+                  return true;
+                }}
+                onResponderGrant={handleResponderGrant}
+                onResponderMove={handleResponderMove}
+                onResponderRelease={handleResponderRelease}
+                onResponderTerminate={handleResponderRelease}
+              />
               <Grip flipColors x={marker.width / 2} y={rotatorOffset} />
             </G>
           </G>
