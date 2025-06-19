@@ -37,6 +37,13 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     x: 0,
     y: 0,
   });
+  const [
+    manipulationStartCenterPagePosition,
+    setManipulationStartCenterPagePosition,
+  ] = useState({
+    x: 0,
+    y: 0,
+  });
 
   const handleResponderGrant = (ev: GestureResponderEvent) => {
     console.log('Manipulation mode:', manipulationMode);
@@ -92,11 +99,13 @@ const RectangularBoxMarkerBaseEditor: React.FC<
           updatedMarker.top = markerStartPosition.top - offsetY;
           break;
         case 'rotate':
-          let newAngle =
-            markerStartAngle + Math.atan2(dy, dx) * (180 / Math.PI);
+          const centerDx =
+            ev.nativeEvent.pageX - manipulationStartCenterPagePosition.x;
+          const centerDy =
+            ev.nativeEvent.pageY - manipulationStartCenterPagePosition.y;
+          let newAngle = Math.atan2(centerDy, centerDx) * (180 / Math.PI) + 90;
 
           // Normalize the angle to 0-360 range
-          //newAngle = newAngle + 90;
           if (newAngle < 0) {
             newAngle += 360;
           }
@@ -123,6 +132,37 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     });
     setMarkerStartAngle(marker.rotationAngle || 0);
     setManipulationStartPosition({ x: 0, y: 0 });
+  };
+
+  const handleRotatorShouldSetResponder = (ev: GestureResponderEvent) => {
+    setManipulationMode('rotate');
+
+    const radius = marker.height / 2 + Math.abs(rotatorOffset);
+
+    console.log('Rotator grip pressed:', {
+      pageX: ev.nativeEvent.pageX,
+      pageY: ev.nativeEvent.pageY,
+      locationX: ev.nativeEvent.locationX,
+      locationY: ev.nativeEvent.locationY,
+      markerHeight: marker.height,
+      radius,
+    });
+
+    const angleRad = (markerStartAngle * Math.PI) / 180;
+
+    const centerX = ev.nativeEvent.pageX - radius * Math.sin(angleRad);
+    const centerY = ev.nativeEvent.pageY + radius * Math.cos(angleRad);
+
+    setManipulationStartCenterPagePosition({
+      x: centerX,
+      y: centerY,
+    });
+
+    console.log('Manipulation start center position:', {
+      x: centerX,
+      y: centerY,
+    });
+    return true;
   };
 
   return (
@@ -176,10 +216,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
                 flipColors
                 x={marker.width / 2}
                 y={rotatorOffset}
-                onStartShouldSetResponder={() => {
-                  setManipulationMode('rotate');
-                  return true;
-                }}
+                onStartShouldSetResponder={handleRotatorShouldSetResponder}
                 onResponderGrant={handleResponderGrant}
                 onResponderMove={handleResponderMove}
                 onResponderRelease={handleResponderRelease}
