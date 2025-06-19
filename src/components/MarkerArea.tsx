@@ -168,6 +168,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                 }
                 setCreatingMarker(null);
                 setMode('select');
+                setSelectedMarker(m[markerIdSymbol] ?? null);
               }}
             />
           )}
