@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { G, Line, Rect } from 'react-native-svg';
 import type { RectangularBoxMarkerBaseState } from '../../core/RectangularBoxMarkerBaseState';
 import FrameMarker from '../core/FrameMarker';
@@ -7,6 +7,7 @@ import MarkerBaseEditor, {
   type MarkerBaseEditorProps,
 } from './MarkerBaseEditor';
 import { type GestureResponderEvent } from 'react-native';
+import type { GestureLocation } from '../../editor/GestureLocation';
 
 interface RectangularBoxMarkerBaseEditorProps extends MarkerBaseEditorProps {
   marker: RectangularBoxMarkerBaseState;
@@ -16,7 +17,16 @@ type ManipulationMode = 'move' | 'resize' | 'rotate';
 
 const RectangularBoxMarkerBaseEditor: React.FC<
   RectangularBoxMarkerBaseEditorProps
-> = ({ marker, selected, onSelect, onMarkerChange }) => {
+> = ({
+  marker,
+  mode,
+  selected,
+  gestureStartLocation,
+  gestureMoveLocation,
+  onSelect,
+  onMarkerChange,
+  onMarkerCreate,
+}) => {
   const rotatorOffset = -30 as const;
 
   const [manipulationMode, setManipulationMode] =
@@ -45,15 +55,26 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     y: 0,
   });
 
+  const startManipulation = (location: GestureLocation) => {
+    setManipulationStartPosition({
+      x: location.pageX,
+      y: location.pageY,
+    });
+  };
+
   const handleResponderGrant = (ev: GestureResponderEvent) => {
     console.log('Manipulation mode:', manipulationMode);
-    setManipulationStartPosition({
-      x: ev.nativeEvent.pageX,
-      y: ev.nativeEvent.pageY,
+
+    startManipulation({
+      pageX: ev.nativeEvent.pageX,
+      pageY: ev.nativeEvent.pageY,
+      locationX: ev.nativeEvent.locationX,
+      locationY: ev.nativeEvent.locationY,
     });
 
     onSelect?.(marker);
   };
+
   const handleResponderMove = (ev: GestureResponderEvent) => {
     // Get absolute movement in screen coordinates
     const dx = ev.nativeEvent.pageX - manipulationStartPosition.x;
@@ -164,6 +185,55 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     });
     return true;
   };
+
+  useEffect(() => {
+    if (gestureStartLocation) {
+      startManipulation(gestureStartLocation);
+      // Only update if the gestureStartLocation is different from marker's current position
+      const newLeft = gestureStartLocation.locationX;
+      const newTop = gestureStartLocation.locationY;
+      if (marker.left !== newLeft || marker.top !== newTop) {
+        const updatedMarker: RectangularBoxMarkerBaseState = {
+          ...marker,
+          left: newLeft,
+          top: newTop,
+        };
+        if (onMarkerChange) {
+          onMarkerChange(updatedMarker);
+        }
+      }
+    }
+    // Only depend on gestureStartLocation and onMarkerChange
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gestureStartLocation, onMarkerChange]);
+
+  useEffect(() => {
+    if (gestureMoveLocation) {
+      const dx = gestureMoveLocation.pageX - manipulationStartPosition.x;
+      const dy = gestureMoveLocation.pageY - manipulationStartPosition.y;
+      if (marker.width !== dx || marker.height !== dy) {
+        const updatedMarker: RectangularBoxMarkerBaseState = {
+          ...marker,
+          width: dx,
+          height: dy,
+        };
+        if (onMarkerChange) {
+          onMarkerChange(updatedMarker);
+        }
+      }
+    }
+    // Only depend on gestureMoveLocation and onMarkerChange
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gestureMoveLocation, onMarkerChange]);
+
+  useEffect(() => {
+    if (mode === 'finishCreation') {
+      if (onMarkerCreate) {
+        onMarkerCreate(marker);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, onMarkerCreate]);
 
   return (
     <MarkerBaseEditor

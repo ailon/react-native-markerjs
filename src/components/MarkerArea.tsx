@@ -1,11 +1,19 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, type GestureResponderEvent } from 'react-native';
 import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
 import RectangularBoxMarkerBaseEditor from './editor/RectangularBoxMarkerBaseEditor';
 import type { RectangularBoxMarkerBaseState } from '../core/RectangularBoxMarkerBaseState';
-import { useEffect, useState } from 'react';
-import { markerIdSymbol } from '../core/MarkerBaseState';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { markerIdSymbol, type MarkerBaseState } from '../core/MarkerBaseState';
 import { generateMarkerId } from '../core/markerIdGenerator';
+import { FrameMarkerFactory } from '../core/FrameMarkerFactory';
+import type { GestureLocation } from '../editor/GestureLocation';
+import type { EditorMode } from './editor/MarkerBaseEditor';
+
+export interface MarkerAreaHandle {
+  createMarker: (markerType: string) => void;
+  switchToSelectMode: () => void;
+}
 
 interface MarkerAreaProps {
   targetSrc: string;
@@ -13,75 +21,161 @@ interface MarkerAreaProps {
   onAnnotationChange?: (annotation: AnnotationState) => void;
 }
 
-const MarkerArea: React.FC<MarkerAreaProps> = ({
-  targetSrc,
-  annotation,
-  onAnnotationChange,
-}) => {
-  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+type MarkerAreaMode = 'create' | 'select';
 
-  useEffect(() => {
-    const missingIdIndex = annotation.markers.findIndex((marker) => {
-      return marker[markerIdSymbol] === undefined;
-    });
+const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
+  ({ targetSrc, annotation, onAnnotationChange }, ref) => {
+    const [mode, setMode] = useState<MarkerAreaMode>('select');
+    const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+    const [markerTypeToCreate, setMarkerTypeToCreate] = useState<string | null>(
+      null
+    );
+    const [creatingMarker, setCreatingMarker] =
+      useState<MarkerBaseState | null>(null);
+    const [creatingEditorMode, setCreatingEditorMode] =
+      useState<EditorMode>('select');
 
-    if (missingIdIndex > -1) {
-      const newMarkers = annotation.markers.map((marker) => {
-        const newMarker = {
-          ...marker,
-          [markerIdSymbol]: marker[markerIdSymbol] ?? generateMarkerId(),
-        };
-        return newMarker;
+    const [gestureStartLocation, setGestureStartLocation] =
+      useState<GestureLocation | null>(null);
+    const [gestureMoveLocation, setGestureMoveLocation] =
+      useState<GestureLocation | null>(null);
+
+    const createMarker = (markerType: string) => {
+      setMarkerTypeToCreate(markerType);
+      setMode('create');
+    };
+
+    useImperativeHandle(ref, () => ({
+      createMarker,
+      switchToSelectMode: () => setMode('select'),
+    }));
+
+    useEffect(() => {
+      const missingIdIndex = annotation.markers.findIndex((marker) => {
+        return marker[markerIdSymbol] === undefined;
       });
 
-      if (onAnnotationChange) {
-        onAnnotationChange({
-          ...annotation,
-          markers: newMarkers,
+      if (missingIdIndex > -1) {
+        const newMarkers = annotation.markers.map((marker) => {
+          const newMarker = {
+            ...marker,
+            [markerIdSymbol]: marker[markerIdSymbol] ?? generateMarkerId(),
+          };
+          return newMarker;
         });
-      }
-    }
-  }, [onAnnotationChange, annotation]);
 
-  return (
-    <View style={styles.container}>
-      <Svg
-        width={annotation.width}
-        height={annotation.height}
-        viewBox={`0 0 ${annotation.width} ${annotation.height}`}
-      >
-        <Image
-          href={targetSrc}
+        if (onAnnotationChange) {
+          onAnnotationChange({
+            ...annotation,
+            markers: newMarkers,
+          });
+        }
+      }
+    }, [onAnnotationChange, annotation]);
+
+    const handleResponderGrant = (ev: GestureResponderEvent) => {
+      if (mode === 'create' && markerTypeToCreate) {
+        console.log('Creating marker of type:', markerTypeToCreate);
+
+        setCreatingEditorMode('create');
+
+        setGestureStartLocation({
+          pageX: ev.nativeEvent.pageX,
+          pageY: ev.nativeEvent.pageY,
+          locationX: ev.nativeEvent.locationX,
+          locationY: ev.nativeEvent.locationY,
+        });
+
+        if (markerTypeToCreate === 'FrameMarker') {
+          const newMarker = FrameMarkerFactory.createMarker();
+          setCreatingMarker(newMarker);
+        }
+      }
+    };
+
+    const handleResponderMove = (ev: GestureResponderEvent) => {
+      setGestureMoveLocation({
+        pageX: ev.nativeEvent.pageX,
+        pageY: ev.nativeEvent.pageY,
+        locationX: ev.nativeEvent.locationX,
+        locationY: ev.nativeEvent.locationY,
+      });
+    };
+
+    const handleResponderRelease = (_ev: GestureResponderEvent) => {
+      setCreatingEditorMode('finishCreation');
+      setGestureStartLocation(null);
+      setGestureMoveLocation(null);
+    };
+
+    return (
+      <View style={styles.container}>
+        <Svg
           width={annotation.width}
           height={annotation.height}
-        />
-        {annotation.markers.map((marker, index) =>
-          marker.typeName === 'FrameMarker' ? (
+          viewBox={`0 0 ${annotation.width} ${annotation.height}`}
+          onStartShouldSetResponder={() => mode === 'create'}
+          onResponderGrant={handleResponderGrant}
+          onResponderMove={handleResponderMove}
+          onResponderRelease={handleResponderRelease}
+          onResponderTerminate={handleResponderRelease}
+        >
+          <Image
+            href={targetSrc}
+            width={annotation.width}
+            height={annotation.height}
+          />
+          {annotation.markers.map((marker, index) =>
+            marker.typeName === 'FrameMarker' ? (
+              <RectangularBoxMarkerBaseEditor
+                key={marker[markerIdSymbol] ?? index}
+                marker={marker as RectangularBoxMarkerBaseState}
+                selected={selectedMarker === marker[markerIdSymbol]}
+                onSelect={(m) => setSelectedMarker(m[markerIdSymbol] ?? null)}
+                onMarkerChange={(m) => {
+                  if (onAnnotationChange) {
+                    const updatedAnnotation = {
+                      ...annotation,
+                      markers: annotation.markers.map((mark) =>
+                        mark[markerIdSymbol] === m[markerIdSymbol]
+                          ? { ...mark, ...m }
+                          : mark
+                      ),
+                    };
+                    onAnnotationChange(updatedAnnotation);
+                  }
+                }}
+              />
+            ) : null
+          )}
+
+          {creatingMarker && (
             <RectangularBoxMarkerBaseEditor
-              key={marker[markerIdSymbol] ?? index}
-              marker={marker as RectangularBoxMarkerBaseState}
-              selected={selectedMarker === marker[markerIdSymbol]}
-              onSelect={(m) => setSelectedMarker(m[markerIdSymbol] ?? null)}
+              marker={creatingMarker as RectangularBoxMarkerBaseState}
+              mode={creatingEditorMode}
+              gestureStartLocation={gestureStartLocation ?? undefined}
+              gestureMoveLocation={gestureMoveLocation ?? undefined}
               onMarkerChange={(m) => {
+                setCreatingMarker(m);
+              }}
+              onMarkerCreate={(m) => {
                 if (onAnnotationChange) {
                   const updatedAnnotation = {
                     ...annotation,
-                    markers: annotation.markers.map((mark) =>
-                      mark[markerIdSymbol] === m[markerIdSymbol]
-                        ? { ...mark, ...m }
-                        : mark
-                    ),
+                    markers: [...annotation.markers, m],
                   };
                   onAnnotationChange(updatedAnnotation);
                 }
+                setCreatingMarker(null);
+                setMode('select');
               }}
             />
-          ) : null
-        )}
-      </Svg>
-    </View>
-  );
-};
+          )}
+        </Svg>
+      </View>
+    );
+  }
+);
 
 export default MarkerArea;
 

@@ -1,8 +1,8 @@
-import MarkerArea from './components/MarkerArea';
+import MarkerArea, { type MarkerAreaHandle } from './components/MarkerArea';
 import MarkerView from './components/MarkerView';
 import Renderer from './components/Renderer';
 
-export { MarkerArea, MarkerView, Renderer };
+export { MarkerArea, type MarkerAreaHandle, MarkerView, Renderer };
 
 export type { AnnotationState } from './core/AnnotationState';
 export type { MarkerBaseState } from './core/MarkerBaseState';
