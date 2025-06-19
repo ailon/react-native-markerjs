@@ -34,6 +34,10 @@ const Editor = () => {
           title="🖱️"
           onPress={() => markerAreaRef.current?.switchToSelectMode()}
         />
+        <Button
+          title="🗑️"
+          onPress={() => markerAreaRef.current?.deleteSelectedMarker()}
+        />
         <Button title="▭" onPress={() => handleMarkerCreate('FrameMarker')} />
       </View>
     </SafeAreaView>

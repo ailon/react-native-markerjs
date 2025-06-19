@@ -13,6 +13,7 @@ import type { EditorMode } from './editor/MarkerBaseEditor';
 export interface MarkerAreaHandle {
   createMarker: (markerType: string) => void;
   switchToSelectMode: () => void;
+  deleteSelectedMarker: () => void;
 }
 
 interface MarkerAreaProps {
@@ -48,6 +49,15 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     useImperativeHandle(ref, () => ({
       createMarker,
       switchToSelectMode: () => setMode('select'),
+      deleteSelectedMarker: () => {
+        if (selectedMarker && onAnnotationChange) {
+          const updatedMarkers = annotation.markers.filter(
+            (marker) => marker[markerIdSymbol] !== selectedMarker
+          );
+          onAnnotationChange({ ...annotation, markers: updatedMarkers });
+          setSelectedMarker(null);
+        }
+      },
     }));
 
     useEffect(() => {
