@@ -1,6 +1,6 @@
-import { Circle, type CircleProps } from 'react-native-svg';
+import { Circle, G, type GProps } from 'react-native-svg';
 
-interface GripProps extends CircleProps {
+interface GripProps extends GProps {
   x: number;
   y: number;
   strokeColor?: string;
@@ -17,15 +17,25 @@ const Grip: React.FC<GripProps> = ({
   ...props
 }: GripProps) => {
   return (
-    <Circle
-      cx={x}
-      cy={y}
-      r={5}
-      fill={flipColors ? strokeColor : fillColor}
-      stroke={flipColors ? fillColor : strokeColor}
-      strokeWidth={1}
-      {...props}
-    />
+    <G {...props}>
+      {/* larger circle for touch target */}
+      <Circle
+        cx={x}
+        cy={y}
+        r={10}
+        fill="transparent"
+        stroke="transparent"
+        strokeWidth={0}
+      />
+      <Circle
+        cx={x}
+        cy={y}
+        r={5}
+        fill={flipColors ? strokeColor : fillColor}
+        stroke={flipColors ? fillColor : strokeColor}
+        strokeWidth={1}
+      />
+    </G>
   );
 };
 
