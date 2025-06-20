@@ -1,8 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
-import FrameMarker from './core/FrameMarker';
-import type { ShapeOutlineMarkerBaseState } from '../core/ShapeOutlineMarkerBaseState';
+import { markerComponentMap } from './core/markerComponentMap';
 
 interface MarkerViewProps {
   targetSrc: string;
@@ -22,14 +21,12 @@ const MarkerView: React.FC<MarkerViewProps> = ({ targetSrc, annotation }) => {
           width={annotation.width}
           height={annotation.height}
         />
-        {annotation.markers.map((marker, index) =>
-          marker.typeName === 'FrameMarker' ? (
-            <FrameMarker
-              key={index}
-              {...(marker as ShapeOutlineMarkerBaseState)}
-            />
-          ) : null
-        )}
+        {annotation.markers.map((marker, index) => {
+          const MarkerComponent = markerComponentMap[marker.typeName];
+          return MarkerComponent ? (
+            <MarkerComponent key={index} {...marker} />
+          ) : null;
+        })}
       </Svg>
     </View>
   );

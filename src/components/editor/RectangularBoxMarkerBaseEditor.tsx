@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { G, Line, Rect } from 'react-native-svg';
 import type { RectangularBoxMarkerBaseState } from '../../core/RectangularBoxMarkerBaseState';
-import FrameMarker from '../core/FrameMarker';
 import Grip from './Grip';
 import MarkerBaseEditor, {
   type MarkerBaseEditorProps,
 } from './MarkerBaseEditor';
 import { type GestureResponderEvent } from 'react-native';
 import type { GestureLocation } from '../../editor/GestureLocation';
+import { markerComponentMap } from '../core/markerComponentMap';
 
 interface RectangularBoxMarkerBaseEditorProps extends MarkerBaseEditorProps {
   marker: RectangularBoxMarkerBaseState;
@@ -235,6 +235,12 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, onMarkerCreate]);
 
+  const MarkerComponent = markerComponentMap[marker.typeName];
+  if (!MarkerComponent) {
+    console.warn(`No marker component found for type: ${marker.typeName}`);
+    return null;
+  }
+
   return (
     <MarkerBaseEditor
       marker={marker}
@@ -244,58 +250,56 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       onResponderRelease={handleResponderRelease}
       onResponderTerminate={handleResponderRelease}
     >
-      {marker.typeName === 'FrameMarker' && (
-        <FrameMarker {...marker}>
-          {/* eslint-disable-next-line react-native/no-inline-styles */}
-          <G style={{ display: selected ? 'flex' : 'none' }}>
-            {/* control box */}
-            <Rect
-              x="0"
-              y="0"
-              width={marker.width}
-              height={marker.height}
-              fill="transparent"
-              stroke="black"
-              strokeWidth="0.5"
-              strokeDasharray="3, 2"
+      <MarkerComponent {...marker}>
+        {/* eslint-disable-next-line react-native/no-inline-styles */}
+        <G style={{ display: selected ? 'flex' : 'none' }}>
+          {/* control box */}
+          <Rect
+            x="0"
+            y="0"
+            width={marker.width}
+            height={marker.height}
+            fill="transparent"
+            stroke="black"
+            strokeWidth="0.5"
+            strokeDasharray="3, 2"
+          />
+          <Line
+            x1={marker.width / 2}
+            y1="0"
+            x2={marker.width / 2}
+            y2={rotatorOffset}
+            stroke="black"
+            strokeWidth="0.5"
+            strokeDasharray="3, 2"
+          />
+          <G>
+            {/* grips */}
+            <Grip
+              x={marker.width}
+              y={marker.height}
+              onStartShouldSetResponder={() => {
+                setManipulationMode('resize');
+                return true;
+              }}
+              onResponderGrant={handleResponderGrant}
+              onResponderMove={handleResponderMove}
+              onResponderRelease={handleResponderRelease}
+              onResponderTerminate={handleResponderRelease}
             />
-            <Line
-              x1={marker.width / 2}
-              y1="0"
-              x2={marker.width / 2}
-              y2={rotatorOffset}
-              stroke="black"
-              strokeWidth="0.5"
-              strokeDasharray="3, 2"
+            <Grip
+              flipColors
+              x={marker.width / 2}
+              y={rotatorOffset}
+              onStartShouldSetResponder={handleRotatorShouldSetResponder}
+              onResponderGrant={handleResponderGrant}
+              onResponderMove={handleResponderMove}
+              onResponderRelease={handleResponderRelease}
+              onResponderTerminate={handleResponderRelease}
             />
-            <G>
-              {/* grips */}
-              <Grip
-                x={marker.width}
-                y={marker.height}
-                onStartShouldSetResponder={() => {
-                  setManipulationMode('resize');
-                  return true;
-                }}
-                onResponderGrant={handleResponderGrant}
-                onResponderMove={handleResponderMove}
-                onResponderRelease={handleResponderRelease}
-                onResponderTerminate={handleResponderRelease}
-              />
-              <Grip
-                flipColors
-                x={marker.width / 2}
-                y={rotatorOffset}
-                onStartShouldSetResponder={handleRotatorShouldSetResponder}
-                onResponderGrant={handleResponderGrant}
-                onResponderMove={handleResponderMove}
-                onResponderRelease={handleResponderRelease}
-                onResponderTerminate={handleResponderRelease}
-              />
-            </G>
           </G>
-        </FrameMarker>
-      )}
+        </G>
+      </MarkerComponent>
     </MarkerBaseEditor>
   );
 };

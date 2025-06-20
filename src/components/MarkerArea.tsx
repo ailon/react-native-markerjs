@@ -1,14 +1,13 @@
 import { StyleSheet, View, type GestureResponderEvent } from 'react-native';
 import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
-import RectangularBoxMarkerBaseEditor from './editor/RectangularBoxMarkerBaseEditor';
-import type { RectangularBoxMarkerBaseState } from '../core/RectangularBoxMarkerBaseState';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { markerIdSymbol, type MarkerBaseState } from '../core/MarkerBaseState';
 import { generateMarkerId } from '../core/markerIdGenerator';
-import { FrameMarkerFactory } from '../core/FrameMarkerFactory';
 import type { GestureLocation } from '../editor/GestureLocation';
 import type { EditorMode } from './editor/MarkerBaseEditor';
+import { editorComponentMap } from './editor/editorComponentMap';
+import { markerFactoryMap } from '../core/markerFactoryMap';
 
 export interface MarkerAreaHandle {
   createMarker: (markerType: string) => void;
@@ -96,8 +95,9 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
           locationY: ev.nativeEvent.locationY,
         });
 
-        if (markerTypeToCreate === 'FrameMarker') {
-          const newMarker = FrameMarkerFactory.createMarker();
+        const markerFactory = markerFactoryMap[markerTypeToCreate];
+        if (markerFactory) {
+          const newMarker = markerFactory.createMarker();
           setCreatingMarker(newMarker);
         }
       }
@@ -118,6 +118,16 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       setGestureMoveLocation(null);
     };
 
+    const CreatingEditorComponent =
+      creatingMarker && editorComponentMap[creatingMarker.typeName];
+
+    if (creatingMarker && !CreatingEditorComponent) {
+      console.warn(
+        `No editor component found for type: ${creatingMarker.typeName}`
+      );
+      return null;
+    }
+
     return (
       <View style={styles.container}>
         <Svg
@@ -135,14 +145,25 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
             width={annotation.width}
             height={annotation.height}
           />
-          {annotation.markers.map((marker, index) =>
-            marker.typeName === 'FrameMarker' ? (
-              <RectangularBoxMarkerBaseEditor
+          {annotation.markers.map((marker, index) => {
+            const EditorComponent = editorComponentMap[marker.typeName];
+
+            if (!EditorComponent) {
+              console.warn(
+                `No editor component found for type: ${marker.typeName}`
+              );
+              return null;
+            }
+
+            return (
+              <EditorComponent
                 key={marker[markerIdSymbol] ?? index}
-                marker={marker as RectangularBoxMarkerBaseState}
+                marker={marker}
                 selected={selectedMarker === marker[markerIdSymbol]}
-                onSelect={(m) => setSelectedMarker(m[markerIdSymbol] ?? null)}
-                onMarkerChange={(m) => {
+                onSelect={(m: MarkerBaseState) =>
+                  setSelectedMarker(m[markerIdSymbol] ?? null)
+                }
+                onMarkerChange={(m: MarkerBaseState) => {
                   if (onAnnotationChange) {
                     const updatedAnnotation = {
                       ...annotation,
@@ -156,19 +177,19 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                   }
                 }}
               />
-            ) : null
-          )}
+            );
+          })}
 
-          {creatingMarker && (
-            <RectangularBoxMarkerBaseEditor
-              marker={creatingMarker as RectangularBoxMarkerBaseState}
+          {creatingMarker && CreatingEditorComponent && (
+            <CreatingEditorComponent
+              marker={creatingMarker}
               mode={creatingEditorMode}
               gestureStartLocation={gestureStartLocation ?? undefined}
               gestureMoveLocation={gestureMoveLocation ?? undefined}
-              onMarkerChange={(m) => {
+              onMarkerChange={(m: MarkerBaseState) => {
                 setCreatingMarker(m);
               }}
-              onMarkerCreate={(m) => {
+              onMarkerCreate={(m: MarkerBaseState) => {
                 if (onAnnotationChange) {
                   const updatedAnnotation = {
                     ...annotation,
