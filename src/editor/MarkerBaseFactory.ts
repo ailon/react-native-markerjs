@@ -1,4 +1,4 @@
-import { markerIdSymbol, type MarkerBaseState } from './MarkerBaseState';
+import { markerIdSymbol, type MarkerBaseState } from '../core/MarkerBaseState';
 import { generateMarkerId } from './markerIdGenerator';
 
 export class MarkerBaseFactory {

@@ -1,5 +1,5 @@
 import { MarkerBaseFactory } from './MarkerBaseFactory';
-import type { ShapeOutlineMarkerBaseState } from './ShapeOutlineMarkerBaseState';
+import type { ShapeOutlineMarkerBaseState } from '../core/ShapeOutlineMarkerBaseState';
 
 export class FrameMarkerFactory extends MarkerBaseFactory {
   public static override createMarker(): ShapeOutlineMarkerBaseState {

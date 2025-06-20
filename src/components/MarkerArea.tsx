@@ -3,11 +3,11 @@ import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { markerIdSymbol, type MarkerBaseState } from '../core/MarkerBaseState';
-import { generateMarkerId } from '../core/markerIdGenerator';
+import { generateMarkerId } from '../editor/markerIdGenerator';
 import type { GestureLocation } from '../editor/GestureLocation';
 import type { EditorMode } from './editor/MarkerBaseEditor';
 import { editorComponentMap } from './editor/editorComponentMap';
-import { markerFactoryMap } from '../core/markerFactoryMap';
+import { markerFactoryMap } from '../editor/markerFactoryMap';
 
 export interface MarkerAreaHandle {
   createMarker: (markerType: string) => void;
