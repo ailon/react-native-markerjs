@@ -15,6 +15,10 @@ interface RectangularBoxMarkerBaseEditorProps extends MarkerBaseEditorProps {
 
 type ManipulationMode = 'move' | 'resize' | 'rotate';
 
+const rotatorOffset = -30 as const;
+const minWidth = 10 as const;
+const minHeight = 10 as const;
+
 const RectangularBoxMarkerBaseEditor: React.FC<
   RectangularBoxMarkerBaseEditorProps
 > = ({
@@ -27,8 +31,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   onMarkerChange,
   onMarkerCreate,
 }) => {
-  const rotatorOffset = -30 as const;
-
   const [manipulationMode, setManipulationMode] =
     useState<ManipulationMode>('move');
 
@@ -98,8 +100,8 @@ const RectangularBoxMarkerBaseEditor: React.FC<
           const widthChange = rotatedDx;
           const heightChange = rotatedDy;
 
-          const newWidth = markerStartSize.width + widthChange;
-          const newHeight = markerStartSize.height + heightChange;
+          const newWidth = Math.max(markerStartSize.width + widthChange, 0);
+          const newHeight = Math.max(markerStartSize.height + heightChange, 0);
 
           // Calculate the position adjustment needed to keep top-left corner in place
           const widthDiff = newWidth - markerStartSize.width;
@@ -143,16 +145,23 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   };
   const handleResponderRelease = () => {
     setManipulationMode('move');
+
+    const updatedMarker: RectangularBoxMarkerBaseState = {
+      ...marker,
+      width: Math.max(marker.width, minWidth),
+      height: Math.max(marker.height, minHeight),
+    };
     setMarkerStartPosition({
-      left: marker.left,
-      top: marker.top,
+      left: updatedMarker.left,
+      top: updatedMarker.top,
     });
     setMarkerStartSize({
-      width: marker.width,
-      height: marker.height,
+      width: updatedMarker.width,
+      height: updatedMarker.height,
     });
-    setMarkerStartAngle(marker.rotationAngle || 0);
+    setMarkerStartAngle(updatedMarker.rotationAngle || 0);
     setManipulationStartPosition({ x: 0, y: 0 });
+    onMarkerChange?.(updatedMarker);
   };
 
   const handleRotatorShouldSetResponder = (ev: GestureResponderEvent) => {
@@ -209,8 +218,14 @@ const RectangularBoxMarkerBaseEditor: React.FC<
 
   useEffect(() => {
     if (gestureMoveLocation) {
-      const dx = gestureMoveLocation.pageX - manipulationStartPosition.x;
-      const dy = gestureMoveLocation.pageY - manipulationStartPosition.y;
+      const dx = Math.max(
+        gestureMoveLocation.pageX - manipulationStartPosition.x,
+        0
+      );
+      const dy = Math.max(
+        gestureMoveLocation.pageY - manipulationStartPosition.y,
+        0
+      );
       if (marker.width !== dx || marker.height !== dy) {
         const updatedMarker: RectangularBoxMarkerBaseState = {
           ...marker,
@@ -228,8 +243,13 @@ const RectangularBoxMarkerBaseEditor: React.FC<
 
   useEffect(() => {
     if (mode === 'finishCreation') {
+      const sanitizedMarker: RectangularBoxMarkerBaseState = {
+        ...marker,
+        width: Math.max(marker.width, minWidth),
+        height: Math.max(marker.height, minHeight),
+      };
       if (onMarkerCreate) {
-        onMarkerCreate(marker);
+        onMarkerCreate(sanitizedMarker);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
