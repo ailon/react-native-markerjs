@@ -31,9 +31,12 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   onMarkerChange,
   onMarkerCreate,
 }) => {
+  // what type of manipulation is currently active
   const [manipulationMode, setManipulationMode] =
     useState<ManipulationMode>('move');
 
+  // Initial positions and sizes for the marker
+  // These are used to calculate the changes during manipulation
   const [markerStartPosition, setMarkerStartPosition] = useState({
     left: marker.left,
     top: marker.top,
@@ -45,10 +48,13 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   const [markerStartAngle, setMarkerStartAngle] = useState(
     marker.rotationAngle || 0
   );
+
+  // Manipulation start position in screen coordinates
   const [manipulationStartPosition, setManipulationStartPosition] = useState({
     x: 0,
     y: 0,
   });
+  // Center position in page coordinates for rotation manipulation
   const [
     manipulationStartCenterPagePosition,
     setManipulationStartCenterPagePosition,
@@ -103,7 +109,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
           const newWidth = Math.max(markerStartSize.width + widthChange, 0);
           const newHeight = Math.max(markerStartSize.height + heightChange, 0);
 
-          // Calculate the position adjustment needed to keep top-left corner in place
           const widthDiff = newWidth - markerStartSize.width;
           const heightDiff = newHeight - markerStartSize.height;
 
@@ -195,6 +200,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     return true;
   };
 
+  // handle start of the creation of a new marker
   useEffect(() => {
     if (gestureStartLocation) {
       startManipulation(gestureStartLocation);
@@ -216,6 +222,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gestureStartLocation, onMarkerChange]);
 
+  // handle changes during the creation of a new marker
   useEffect(() => {
     if (gestureMoveLocation) {
       const dx = Math.max(
@@ -241,6 +248,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gestureMoveLocation, onMarkerChange]);
 
+  // handle the end of the creation of a new marker
   useEffect(() => {
     if (mode === 'finishCreation') {
       const sanitizedMarker: RectangularBoxMarkerBaseState = {
@@ -255,6 +263,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, onMarkerCreate]);
 
+  // find the marker component for the current marker type
   const MarkerComponent = markerComponentMap[marker.typeName];
   if (!MarkerComponent) {
     console.warn(`No marker component found for type: ${marker.typeName}`);

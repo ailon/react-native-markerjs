@@ -26,25 +26,35 @@ type MarkerAreaMode = 'create' | 'select';
 const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
   ({ targetSrc, annotation, onAnnotationChange }, ref) => {
     const [mode, setMode] = useState<MarkerAreaMode>('select');
+
+    // selected marker ID
     const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+
+    // type of marker to create in "create" mode
     const [markerTypeToCreate, setMarkerTypeToCreate] = useState<string | null>(
       null
     );
+    // marker being created in "create" mode
     const [creatingMarker, setCreatingMarker] =
       useState<MarkerBaseState | null>(null);
+    // editor mode for the marker being created - this informs the editor component
+    // about whether it's in the process of being created or finished creation
     const [creatingEditorMode, setCreatingEditorMode] =
       useState<EditorMode>('select');
 
+    // locations for gesture handling passed down to the editor component
     const [gestureStartLocation, setGestureStartLocation] =
       useState<GestureLocation | null>(null);
     const [gestureMoveLocation, setGestureMoveLocation] =
       useState<GestureLocation | null>(null);
 
+    // initiates marker creation
     const createMarker = (markerType: string) => {
       setMarkerTypeToCreate(markerType);
       setMode('create');
     };
 
+    // Expose methods to the parent component via ref
     useImperativeHandle(ref, () => ({
       createMarker,
       switchToSelectMode: () => setMode('select'),
@@ -59,6 +69,8 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       },
     }));
 
+    // Ensure all markers have a unique ID
+    // This is important for the editor to track markers correctly
     useEffect(() => {
       const missingIdIndex = annotation.markers.findIndex((marker) => {
         return marker[markerIdSymbol] === undefined;
@@ -82,6 +94,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       }
     }, [onAnnotationChange, annotation]);
 
+    // Handle gestures on the marker area
     const handleResponderGrant = (ev: GestureResponderEvent) => {
       if (mode === 'create' && markerTypeToCreate) {
         console.log('Creating marker of type:', markerTypeToCreate);
@@ -118,6 +131,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       setGestureMoveLocation(null);
     };
 
+    // If a marker is being created, we need to find its editor component
     const CreatingEditorComponent =
       creatingMarker && editorComponentMap[creatingMarker.typeName];
 
@@ -146,8 +160,8 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
             height={annotation.height}
           />
           {annotation.markers.map((marker, index) => {
+            // find the editor component for the marker
             const EditorComponent = editorComponentMap[marker.typeName];
-
             if (!EditorComponent) {
               console.warn(
                 `No editor component found for type: ${marker.typeName}`
