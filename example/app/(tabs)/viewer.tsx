@@ -1,13 +1,14 @@
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { MarkerView } from '@markerjs/react-native-markerjs';
-import { testState } from '../../sample-data/sample-state';
+import { useAnnotationContext } from '../context/AnnotationContext';
 
 const Viewer = () => {
+  const { annotation } = useAnnotationContext();
   return (
     <SafeAreaView style={styles.container}>
       <MarkerView
         targetSrc={require('../../assets/sample-images/landscape_sm.jpg')}
-        annotation={testState}
+        annotation={annotation}
       />
     </SafeAreaView>
   );

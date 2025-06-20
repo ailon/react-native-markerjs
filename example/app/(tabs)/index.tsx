@@ -1,19 +1,14 @@
 import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
 import {
   MarkerArea,
-  type AnnotationState,
   type MarkerAreaHandle,
 } from '@markerjs/react-native-markerjs';
-import { testState } from '../../sample-data/sample-state';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
+import { useAnnotationContext } from '../context/AnnotationContext';
 
 const Editor = () => {
-  const [annotation, setAnnotation] = useState(testState);
+  const { annotation, handleAnnotationChange } = useAnnotationContext();
   const markerAreaRef = useRef<MarkerAreaHandle>(null);
-
-  const handleAnnotationChange = (newAnnotation: AnnotationState) => {
-    setAnnotation(newAnnotation);
-  };
 
   const handleMarkerCreate = (markerType: string) => {
     markerAreaRef.current?.createMarker(markerType);
