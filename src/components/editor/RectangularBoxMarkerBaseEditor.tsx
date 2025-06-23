@@ -75,10 +75,10 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     console.log('Manipulation mode:', manipulationMode);
 
     startManipulation({
-      pageX: ev.nativeEvent.pageX / zoomFactor,
-      pageY: ev.nativeEvent.pageY / zoomFactor,
-      locationX: ev.nativeEvent.locationX / zoomFactor,
-      locationY: ev.nativeEvent.locationY / zoomFactor,
+      pageX: ev.nativeEvent.pageX,
+      pageY: ev.nativeEvent.pageY,
+      locationX: ev.nativeEvent.locationX,
+      locationY: ev.nativeEvent.locationY,
     });
 
     onSelect?.(marker);
@@ -86,8 +86,8 @@ const RectangularBoxMarkerBaseEditor: React.FC<
 
   const handleResponderMove = (ev: GestureResponderEvent) => {
     // Get absolute movement in screen coordinates
-    const dx = ev.nativeEvent.pageX - manipulationStartPosition.x;
-    const dy = ev.nativeEvent.pageY - manipulationStartPosition.y;
+    const dx = ev.nativeEvent.pageX / zoomFactor - manipulationStartPosition.x;
+    const dy = ev.nativeEvent.pageY / zoomFactor - manipulationStartPosition.y;
 
     // Convert rotation to radians
     const angle = ((marker.rotationAngle || 0) * Math.PI) / 180;
@@ -104,8 +104,8 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       switch (manipulationMode) {
         case 'resize':
           // Calculate width and height changes
-          const widthChange = rotatedDx / zoomFactor;
-          const heightChange = rotatedDy / zoomFactor;
+          const widthChange = rotatedDx;
+          const heightChange = rotatedDy;
 
           const newWidth = Math.max(markerStartSize.width + widthChange, 0);
           const newHeight = Math.max(markerStartSize.height + heightChange, 0);
