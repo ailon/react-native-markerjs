@@ -27,6 +27,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   selected,
   gestureStartLocation,
   gestureMoveLocation,
+  zoomFactor = 1,
   onSelect,
   onMarkerChange,
   onMarkerCreate,
@@ -65,8 +66,8 @@ const RectangularBoxMarkerBaseEditor: React.FC<
 
   const startManipulation = (location: GestureLocation) => {
     setManipulationStartPosition({
-      x: location.pageX,
-      y: location.pageY,
+      x: location.pageX / zoomFactor,
+      y: location.pageY / zoomFactor,
     });
   };
 
@@ -74,10 +75,10 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     console.log('Manipulation mode:', manipulationMode);
 
     startManipulation({
-      pageX: ev.nativeEvent.pageX,
-      pageY: ev.nativeEvent.pageY,
-      locationX: ev.nativeEvent.locationX,
-      locationY: ev.nativeEvent.locationY,
+      pageX: ev.nativeEvent.pageX / zoomFactor,
+      pageY: ev.nativeEvent.pageY / zoomFactor,
+      locationX: ev.nativeEvent.locationX / zoomFactor,
+      locationY: ev.nativeEvent.locationY / zoomFactor,
     });
 
     onSelect?.(marker);
@@ -103,8 +104,8 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       switch (manipulationMode) {
         case 'resize':
           // Calculate width and height changes
-          const widthChange = rotatedDx;
-          const heightChange = rotatedDy;
+          const widthChange = rotatedDx / zoomFactor;
+          const heightChange = rotatedDy / zoomFactor;
 
           const newWidth = Math.max(markerStartSize.width + widthChange, 0);
           const newHeight = Math.max(markerStartSize.height + heightChange, 0);
@@ -205,8 +206,17 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     if (gestureStartLocation) {
       startManipulation(gestureStartLocation);
       // Only update if the gestureStartLocation is different from marker's current position
-      const newLeft = gestureStartLocation.locationX;
-      const newTop = gestureStartLocation.locationY;
+      const newLeft = gestureStartLocation.locationX / zoomFactor;
+      const newTop = gestureStartLocation.locationY / zoomFactor;
+      console.log('Gesture start location:', {
+        pageX: gestureStartLocation.pageX,
+        pageY: gestureStartLocation.pageY,
+        locationX: gestureStartLocation.locationX,
+        locationY: gestureStartLocation.locationY,
+        newLeft,
+        newTop,
+      });
+      console.log('Zoom Factor:', zoomFactor);
       if (marker.left !== newLeft || marker.top !== newTop) {
         const updatedMarker: RectangularBoxMarkerBaseState = {
           ...marker,
@@ -226,13 +236,14 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   useEffect(() => {
     if (gestureMoveLocation) {
       const dx = Math.max(
-        gestureMoveLocation.pageX - manipulationStartPosition.x,
+        gestureMoveLocation.pageX / zoomFactor - manipulationStartPosition.x,
         0
       );
       const dy = Math.max(
-        gestureMoveLocation.pageY - manipulationStartPosition.y,
+        gestureMoveLocation.pageY / zoomFactor - manipulationStartPosition.y,
         0
       );
+      console.log('dx and dy:', { dx, dy });
       if (marker.width !== dx || marker.height !== dy) {
         const updatedMarker: RectangularBoxMarkerBaseState = {
           ...marker,
@@ -256,6 +267,11 @@ const RectangularBoxMarkerBaseEditor: React.FC<
         width: Math.max(marker.width, minWidth),
         height: Math.max(marker.height, minHeight),
       };
+      console.log(
+        'Finishing creation of marker:',
+        sanitizedMarker.width,
+        sanitizedMarker.height
+      );
       if (onMarkerCreate) {
         onMarkerCreate(sanitizedMarker);
       }
@@ -279,8 +295,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       onResponderRelease={handleResponderRelease}
       onResponderTerminate={handleResponderRelease}
     >
-      <MarkerComponent {...marker}>
-        {/* eslint-disable-next-line react-native/no-inline-styles */}
+      <MarkerComponent zoomFactor={zoomFactor} {...marker}>
         <G style={{ display: selected ? 'flex' : 'none' }}>
           {/* control box */}
           <Rect
@@ -290,16 +305,16 @@ const RectangularBoxMarkerBaseEditor: React.FC<
             height={marker.height}
             fill="transparent"
             stroke="black"
-            strokeWidth="0.5"
+            strokeWidth={0.5 / zoomFactor}
             strokeDasharray="3, 2"
           />
           <Line
             x1={marker.width / 2}
             y1="0"
             x2={marker.width / 2}
-            y2={rotatorOffset}
+            y2={rotatorOffset / zoomFactor}
             stroke="black"
-            strokeWidth="0.5"
+            strokeWidth={0.5 / zoomFactor}
             strokeDasharray="3, 2"
           />
           <G>
@@ -307,6 +322,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
             <Grip
               x={marker.width}
               y={marker.height}
+              zoomFactor={zoomFactor}
               onStartShouldSetResponder={() => {
                 setManipulationMode('resize');
                 return true;
@@ -319,7 +335,8 @@ const RectangularBoxMarkerBaseEditor: React.FC<
             <Grip
               flipColors
               x={marker.width / 2}
-              y={rotatorOffset}
+              y={rotatorOffset / zoomFactor}
+              zoomFactor={zoomFactor}
               onStartShouldSetResponder={handleRotatorShouldSetResponder}
               onResponderGrant={handleResponderGrant}
               onResponderMove={handleResponderMove}

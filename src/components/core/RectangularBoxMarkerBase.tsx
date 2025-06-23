@@ -10,14 +10,13 @@ interface RectangularBoxMarkerBaseProps
 const RectangularBoxMarkerBase: React.FC<RectangularBoxMarkerBaseProps> = (
   props: RectangularBoxMarkerBaseProps
 ) => {
+  const { left, top, width, height, rotationAngle } = props;
   return (
     <MarkerBase {...props}>
       <G
-        transform={`rotate(${props.rotationAngle ?? 0}, ${props.left + props.width / 2}, ${props.top + props.height / 2})`}
+        transform={`rotate(${rotationAngle ?? 0}, ${left + width / 2}, ${top + height / 2})`}
       >
-        <G transform={`translate(${props.left}, ${props.top})`}>
-          {props.children}
-        </G>
+        <G transform={`translate(${left}, ${top})`}>{props.children}</G>
       </G>
     </MarkerBase>
   );

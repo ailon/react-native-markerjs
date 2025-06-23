@@ -30,7 +30,7 @@ const Editor = () => {
       <View style={styles.markerAreaContainer}>
         <MarkerArea
           ref={markerAreaRef}
-          targetSrc={require('../../assets/sample-images/landscape_sm.jpg')}
+          targetSrc={require('../../assets/sample-images/landscape.jpg')}
           annotation={annotation}
           onAnnotationChange={handleAnnotationChange}
         />
@@ -64,6 +64,8 @@ const styles = StyleSheet.create({
   },
   markerAreaContainer: {
     flex: 0.8,
+    overflow: 'hidden',
+    width: '100%',
   },
   topToolbar: {
     flexDirection: 'row',

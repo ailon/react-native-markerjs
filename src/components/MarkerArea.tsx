@@ -3,11 +3,18 @@ import {
   View,
   type GestureResponderEvent,
   type ImageLoadEventData,
+  type LayoutChangeEvent,
   type NativeSyntheticEvent,
 } from 'react-native';
 import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from 'react';
 import { markerIdSymbol, type MarkerBaseState } from '../core/MarkerBaseState';
 import { generateMarkerId } from '../editor/markerIdGenerator';
 import type { GestureLocation } from '../editor/GestureLocation';
@@ -53,6 +60,36 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       useState<GestureLocation | null>(null);
     const [gestureMoveLocation, setGestureMoveLocation] =
       useState<GestureLocation | null>(null);
+
+    const [annotatedImageSize, setAnnotatedImageSize] = useState<{
+      width: number;
+      height: number;
+    } | null>(null);
+    const [layoutSize, setLayoutSize] = useState<{
+      width: number;
+      height: number;
+    } | null>(null);
+
+    const zoomFactor = useMemo(() => {
+      if (annotatedImageSize && layoutSize) {
+        // fit the annotated image to the layout size
+
+        // Calculate scale to fit the image within the layout while preserving aspect ratio
+        const imgWidth = annotation?.width ?? annotatedImageSize.width;
+        const imgHeight = annotation?.height ?? annotatedImageSize.height;
+        const layoutAspect = layoutSize.width / layoutSize.height;
+        const imgAspect = imgWidth / imgHeight;
+
+        if (imgAspect > layoutAspect) {
+          // Image is wider than layout, fit width
+          return layoutSize.width / imgWidth;
+        } else {
+          // Image is taller than layout, fit height
+          return layoutSize.height / imgHeight;
+        }
+      }
+      return 1;
+    }, [annotatedImageSize, layoutSize, annotation?.width, annotation?.height]);
 
     // initiates marker creation
     const createMarker = (markerType: string) => {
@@ -166,15 +203,38 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       }
     };
 
+    const handleAnnotatedImageLoad = (
+      ev: NativeSyntheticEvent<ImageLoadEventData>
+    ) => {
+      if (annotation) {
+        const { width, height } = ev.nativeEvent.source;
+        console.log('Annotated image loaded with size:', width, height);
+        // Update the annotated image size
+        setAnnotatedImageSize({ width, height });
+      }
+    };
+
+    const handleAnnotationLayout = (ev: LayoutChangeEvent) => {
+      const { width, height } = ev.nativeEvent.layout;
+      console.log('Annotated image layout changed:', width, height);
+      setLayoutSize({ width, height });
+    };
+
+    console.log('Annotation size:', annotation?.width, annotation?.height);
+    console.log('Scale:', zoomFactor);
+
     return (
-      <View style={{ ...styles.container, opacity: annotation ? 1 : 0 }}>
+      <View
+        style={{ ...styles.container, opacity: annotation ? 1 : 0 }}
+        onLayout={handleAnnotationLayout}
+      >
         {annotation === null && (
           <Image href={targetSrc} onLoad={handleInitialImageLoad} />
         )}
         {annotation && (
           <Svg
-            width={annotation.width}
-            height={annotation.height}
+            width={annotation.width * zoomFactor}
+            height={annotation.height * zoomFactor}
             viewBox={`0 0 ${annotation.width} ${annotation.height}`}
             onStartShouldSetResponder={() => mode === 'create'}
             onResponderGrant={handleResponderGrant}
@@ -186,6 +246,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
               href={targetSrc}
               width={annotation.width}
               height={annotation.height}
+              onLoad={handleAnnotatedImageLoad}
             />
             {annotation.markers.map((marker, index) => {
               // find the editor component for the marker
@@ -201,6 +262,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                 <EditorComponent
                   key={marker[markerIdSymbol] ?? index}
                   marker={marker}
+                  zoomFactor={zoomFactor}
                   selected={selectedMarker === marker[markerIdSymbol]}
                   onSelect={(m: MarkerBaseState) =>
                     setSelectedMarker(m[markerIdSymbol] ?? null)
@@ -226,6 +288,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
               <CreatingEditorComponent
                 marker={creatingMarker}
                 mode={creatingEditorMode}
+                zoomFactor={zoomFactor}
                 gestureStartLocation={gestureStartLocation ?? undefined}
                 gestureMoveLocation={gestureMoveLocation ?? undefined}
                 onMarkerChange={(m: MarkerBaseState) => {
@@ -257,7 +320,6 @@ export default MarkerArea;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,

@@ -6,6 +6,7 @@ interface GripProps extends GProps {
   strokeColor?: string;
   fillColor?: string;
   flipColors?: boolean;
+  zoomFactor?: number;
 }
 
 const Grip: React.FC<GripProps> = ({
@@ -14,6 +15,7 @@ const Grip: React.FC<GripProps> = ({
   strokeColor = '#0ea5e9',
   fillColor = 'rgba(255,255,255,0.9)',
   flipColors = false,
+  zoomFactor = 1,
   ...props
 }: GripProps) => {
   return (
@@ -22,7 +24,7 @@ const Grip: React.FC<GripProps> = ({
       <Circle
         cx={x}
         cy={y}
-        r={10}
+        r={10 / zoomFactor}
         fill="transparent"
         stroke="transparent"
         strokeWidth={0}
@@ -30,10 +32,10 @@ const Grip: React.FC<GripProps> = ({
       <Circle
         cx={x}
         cy={y}
-        r={5}
+        r={5 / zoomFactor}
         fill={flipColors ? strokeColor : fillColor}
         stroke={flipColors ? fillColor : strokeColor}
-        strokeWidth={1}
+        strokeWidth={1 / zoomFactor}
       />
     </G>
   );

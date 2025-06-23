@@ -3,6 +3,7 @@ import React from 'react';
 import { G } from 'react-native-svg';
 
 interface MarkerBaseProps extends MarkerBaseState {
+  zoomFactor?: number;
   children?: React.ReactNode;
 }
 

@@ -13,6 +13,7 @@ interface MarkerBaseEditorProps extends ViewProps {
   children?: React.ReactNode;
   gestureStartLocation?: GestureLocation;
   gestureMoveLocation?: GestureLocation;
+  zoomFactor?: number;
   onMarkerChange?: (marker: MarkerBaseState) => void;
   onMarkerCreate?: (marker: MarkerBaseState) => void;
   onSelect?: (marker: MarkerBaseState) => void;
@@ -23,6 +24,8 @@ const MarkerBaseEditor: React.FC<MarkerBaseEditorProps> = ({
   marker,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   mode = 'select',
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  zoomFactor = 1,
   children,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSelect,
