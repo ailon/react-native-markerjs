@@ -11,7 +11,6 @@ const FrameMarker: React.FC<FrameMarkerProps> = (props: FrameMarkerProps) => {
       H 0 
       V 0 Z`;
 
-  console.log('FrameMarker size:', width, height, 'd:', d);
   return <ShapeOutlineMarkerBase {...props} typeName="FrameMarker" d={d} />;
 };
 

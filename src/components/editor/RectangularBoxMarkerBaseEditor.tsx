@@ -72,8 +72,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   };
 
   const handleResponderGrant = (ev: GestureResponderEvent) => {
-    console.log('Manipulation mode:', manipulationMode);
-
     startManipulation({
       pageX: ev.nativeEvent.pageX,
       pageY: ev.nativeEvent.pageY,
@@ -175,15 +173,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
 
     const radius = marker.height / 2 + Math.abs(rotatorOffset);
 
-    console.log('Rotator grip pressed:', {
-      pageX: ev.nativeEvent.pageX,
-      pageY: ev.nativeEvent.pageY,
-      locationX: ev.nativeEvent.locationX,
-      locationY: ev.nativeEvent.locationY,
-      markerHeight: marker.height,
-      radius,
-    });
-
     const angleRad = (markerStartAngle * Math.PI) / 180;
 
     const centerX = ev.nativeEvent.pageX - radius * Math.sin(angleRad);
@@ -194,10 +183,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       y: centerY,
     });
 
-    console.log('Manipulation start center position:', {
-      x: centerX,
-      y: centerY,
-    });
     return true;
   };
 
@@ -208,15 +193,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       // Only update if the gestureStartLocation is different from marker's current position
       const newLeft = gestureStartLocation.locationX / zoomFactor;
       const newTop = gestureStartLocation.locationY / zoomFactor;
-      console.log('Gesture start location:', {
-        pageX: gestureStartLocation.pageX,
-        pageY: gestureStartLocation.pageY,
-        locationX: gestureStartLocation.locationX,
-        locationY: gestureStartLocation.locationY,
-        newLeft,
-        newTop,
-      });
-      console.log('Zoom Factor:', zoomFactor);
       if (marker.left !== newLeft || marker.top !== newTop) {
         const updatedMarker: RectangularBoxMarkerBaseState = {
           ...marker,
@@ -243,7 +219,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
         gestureMoveLocation.pageY / zoomFactor - manipulationStartPosition.y,
         0
       );
-      console.log('dx and dy:', { dx, dy });
       if (marker.width !== dx || marker.height !== dy) {
         const updatedMarker: RectangularBoxMarkerBaseState = {
           ...marker,
@@ -267,11 +242,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
         width: Math.max(marker.width, minWidth),
         height: Math.max(marker.height, minHeight),
       };
-      console.log(
-        'Finishing creation of marker:',
-        sanitizedMarker.width,
-        sanitizedMarker.height
-      );
       if (onMarkerCreate) {
         onMarkerCreate(sanitizedMarker);
       }

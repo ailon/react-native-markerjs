@@ -208,7 +208,6 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     ) => {
       if (annotation) {
         const { width, height } = ev.nativeEvent.source;
-        console.log('Annotated image loaded with size:', width, height);
         // Update the annotated image size
         setAnnotatedImageSize({ width, height });
       }
@@ -216,12 +215,8 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
 
     const handleAnnotationLayout = (ev: LayoutChangeEvent) => {
       const { width, height } = ev.nativeEvent.layout;
-      console.log('Annotated image layout changed:', width, height);
       setLayoutSize({ width, height });
     };
-
-    console.log('Annotation size:', annotation?.width, annotation?.height);
-    console.log('Scale:', zoomFactor);
 
     return (
       <View
