@@ -1,10 +1,9 @@
 import type { AnnotationState } from '@markerjs/react-native-markerjs';
 import React, { createContext, useContext } from 'react';
-import { testState } from '../../sample-data/sample-state';
 
 type AnnotationContextType = {
-  annotation: AnnotationState;
-  handleAnnotationChange: (newAnnotation: AnnotationState) => void;
+  annotation: AnnotationState | null;
+  handleAnnotationChange: (newAnnotation: AnnotationState | null) => void;
 };
 
 const AnnotationContext = createContext<AnnotationContextType | undefined>(
@@ -24,8 +23,9 @@ export const AnnotationProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [annotation, setAnnotation] =
-    React.useState<AnnotationState>(testState);
-  const handleAnnotationChange = (newAnnotation: AnnotationState) => {
+    // React.useState<AnnotationState>(testState);
+    React.useState<AnnotationState | null>(null);
+  const handleAnnotationChange = (newAnnotation: AnnotationState | null) => {
     setAnnotation(newAnnotation);
   };
 
@@ -35,3 +35,5 @@ export const AnnotationProvider: React.FC<{ children: React.ReactNode }> = ({
     </AnnotationContext.Provider>
   );
 };
+
+export default AnnotationProvider;

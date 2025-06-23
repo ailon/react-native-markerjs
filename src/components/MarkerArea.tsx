@@ -1,4 +1,10 @@
-import { StyleSheet, View, type GestureResponderEvent } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  type GestureResponderEvent,
+  type ImageLoadEventData,
+  type NativeSyntheticEvent,
+} from 'react-native';
 import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
@@ -17,7 +23,7 @@ export interface MarkerAreaHandle {
 
 interface MarkerAreaProps {
   targetSrc: string;
-  annotation: AnnotationState;
+  annotation: AnnotationState | null;
   onAnnotationChange?: (annotation: AnnotationState) => void;
 }
 
@@ -59,7 +65,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       createMarker,
       switchToSelectMode: () => setMode('select'),
       deleteSelectedMarker: () => {
-        if (selectedMarker && onAnnotationChange) {
+        if (annotation && selectedMarker && onAnnotationChange) {
           const updatedMarkers = annotation.markers.filter(
             (marker) => marker[markerIdSymbol] !== selectedMarker
           );
@@ -72,6 +78,8 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     // Ensure all markers have a unique ID
     // This is important for the editor to track markers correctly
     useEffect(() => {
+      if (!annotation) return;
+
       const missingIdIndex = annotation.markers.findIndex((marker) => {
         return marker[markerIdSymbol] === undefined;
       });
@@ -142,82 +150,103 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       return null;
     }
 
+    const handleInitialImageLoad = (
+      ev: NativeSyntheticEvent<ImageLoadEventData>
+    ) => {
+      if (annotation === null) {
+        const { width, height } = ev.nativeEvent.source;
+        if (onAnnotationChange) {
+          onAnnotationChange({
+            version: 3,
+            width,
+            height,
+            markers: [],
+          });
+        }
+      }
+    };
+
     return (
-      <View style={styles.container}>
-        <Svg
-          width={annotation.width}
-          height={annotation.height}
-          viewBox={`0 0 ${annotation.width} ${annotation.height}`}
-          onStartShouldSetResponder={() => mode === 'create'}
-          onResponderGrant={handleResponderGrant}
-          onResponderMove={handleResponderMove}
-          onResponderRelease={handleResponderRelease}
-          onResponderTerminate={handleResponderRelease}
-        >
-          <Image
-            href={targetSrc}
+      <View style={{ ...styles.container, opacity: annotation ? 1 : 0 }}>
+        {annotation === null && (
+          <Image href={targetSrc} onLoad={handleInitialImageLoad} />
+        )}
+        {annotation && (
+          <Svg
             width={annotation.width}
             height={annotation.height}
-          />
-          {annotation.markers.map((marker, index) => {
-            // find the editor component for the marker
-            const EditorComponent = editorComponentMap[marker.typeName];
-            if (!EditorComponent) {
-              console.warn(
-                `No editor component found for type: ${marker.typeName}`
-              );
-              return null;
-            }
+            viewBox={`0 0 ${annotation.width} ${annotation.height}`}
+            onStartShouldSetResponder={() => mode === 'create'}
+            onResponderGrant={handleResponderGrant}
+            onResponderMove={handleResponderMove}
+            onResponderRelease={handleResponderRelease}
+            onResponderTerminate={handleResponderRelease}
+          >
+            <Image
+              href={targetSrc}
+              width={annotation.width}
+              height={annotation.height}
+            />
+            {annotation.markers.map((marker, index) => {
+              // find the editor component for the marker
+              const EditorComponent = editorComponentMap[marker.typeName];
+              if (!EditorComponent) {
+                console.warn(
+                  `No editor component found for type: ${marker.typeName}`
+                );
+                return null;
+              }
 
-            return (
-              <EditorComponent
-                key={marker[markerIdSymbol] ?? index}
-                marker={marker}
-                selected={selectedMarker === marker[markerIdSymbol]}
-                onSelect={(m: MarkerBaseState) =>
-                  setSelectedMarker(m[markerIdSymbol] ?? null)
-                }
+              return (
+                <EditorComponent
+                  key={marker[markerIdSymbol] ?? index}
+                  marker={marker}
+                  selected={selectedMarker === marker[markerIdSymbol]}
+                  onSelect={(m: MarkerBaseState) =>
+                    setSelectedMarker(m[markerIdSymbol] ?? null)
+                  }
+                  onMarkerChange={(m: MarkerBaseState) => {
+                    if (onAnnotationChange) {
+                      const updatedAnnotation = {
+                        ...annotation,
+                        markers: annotation.markers.map((mark) =>
+                          mark[markerIdSymbol] === m[markerIdSymbol]
+                            ? { ...mark, ...m }
+                            : mark
+                        ),
+                      };
+                      onAnnotationChange(updatedAnnotation);
+                    }
+                  }}
+                />
+              );
+            })}
+
+            {creatingMarker && CreatingEditorComponent && (
+              <CreatingEditorComponent
+                marker={creatingMarker}
+                mode={creatingEditorMode}
+                gestureStartLocation={gestureStartLocation ?? undefined}
+                gestureMoveLocation={gestureMoveLocation ?? undefined}
                 onMarkerChange={(m: MarkerBaseState) => {
+                  setCreatingMarker(m);
+                }}
+                onMarkerCreate={(m: MarkerBaseState) => {
                   if (onAnnotationChange) {
                     const updatedAnnotation = {
                       ...annotation,
-                      markers: annotation.markers.map((mark) =>
-                        mark[markerIdSymbol] === m[markerIdSymbol]
-                          ? { ...mark, ...m }
-                          : mark
-                      ),
+                      markers: [...annotation.markers, m],
                     };
                     onAnnotationChange(updatedAnnotation);
                   }
+                  setCreatingMarker(null);
+                  setMode('select');
+                  setSelectedMarker(m[markerIdSymbol] ?? null);
                 }}
               />
-            );
-          })}
-
-          {creatingMarker && CreatingEditorComponent && (
-            <CreatingEditorComponent
-              marker={creatingMarker}
-              mode={creatingEditorMode}
-              gestureStartLocation={gestureStartLocation ?? undefined}
-              gestureMoveLocation={gestureMoveLocation ?? undefined}
-              onMarkerChange={(m: MarkerBaseState) => {
-                setCreatingMarker(m);
-              }}
-              onMarkerCreate={(m: MarkerBaseState) => {
-                if (onAnnotationChange) {
-                  const updatedAnnotation = {
-                    ...annotation,
-                    markers: [...annotation.markers, m],
-                  };
-                  onAnnotationChange(updatedAnnotation);
-                }
-                setCreatingMarker(null);
-                setMode('select');
-                setSelectedMarker(m[markerIdSymbol] ?? null);
-              }}
-            />
-          )}
-        </Svg>
+            )}
+          </Svg>
+        )}
       </View>
     );
   }

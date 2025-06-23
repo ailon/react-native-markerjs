@@ -5,6 +5,7 @@ import {
 } from '@markerjs/react-native-markerjs';
 import { useRef } from 'react';
 import { useAnnotationContext } from '../context/AnnotationContext';
+import { testState } from '../../sample-data/sample-state';
 
 const Editor = () => {
   const { annotation, handleAnnotationChange } = useAnnotationContext();
@@ -16,6 +17,16 @@ const Editor = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.topToolbar}>
+        <Button
+          title="Load sample state"
+          onPress={() => handleAnnotationChange(testState)}
+        />
+        <Button
+          title="Reset state"
+          onPress={() => handleAnnotationChange(null)}
+        />
+      </View>
       <View style={styles.markerAreaContainer}>
         <MarkerArea
           ref={markerAreaRef}
@@ -53,6 +64,13 @@ const styles = StyleSheet.create({
   },
   markerAreaContainer: {
     flex: 0.8,
+  },
+  topToolbar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    padding: 10,
   },
   toolbar: {
     flexDirection: 'row',

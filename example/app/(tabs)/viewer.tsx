@@ -6,10 +6,12 @@ const Viewer = () => {
   const { annotation } = useAnnotationContext();
   return (
     <SafeAreaView style={styles.container}>
-      <MarkerView
-        targetSrc={require('../../assets/sample-images/landscape_sm.jpg')}
-        annotation={annotation}
-      />
+      {annotation && (
+        <MarkerView
+          targetSrc={require('../../assets/sample-images/landscape_sm.jpg')}
+          annotation={annotation}
+        />
+      )}
     </SafeAreaView>
   );
 };
