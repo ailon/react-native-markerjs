@@ -13,9 +13,14 @@ import { useMemo, useState } from 'react';
 interface MarkerViewProps {
   targetSrc: string;
   annotation: AnnotationState;
+  scaleStroke?: boolean;
 }
 
-const MarkerView: React.FC<MarkerViewProps> = ({ targetSrc, annotation }) => {
+const MarkerView: React.FC<MarkerViewProps> = ({
+  targetSrc,
+  annotation,
+  scaleStroke = true,
+}) => {
   const [annotatedImageSize, setAnnotatedImageSize] = useState<{
     width: number;
     height: number;
@@ -77,7 +82,12 @@ const MarkerView: React.FC<MarkerViewProps> = ({ targetSrc, annotation }) => {
         {annotation.markers.map((marker, index) => {
           const MarkerComponent = markerComponentMap[marker.typeName];
           return MarkerComponent ? (
-            <MarkerComponent key={index} zoomFactor={zoomFactor} {...marker} />
+            <MarkerComponent
+              key={index}
+              zoomFactor={zoomFactor}
+              scaleStroke={scaleStroke}
+              {...marker}
+            />
           ) : null;
         })}
       </Svg>

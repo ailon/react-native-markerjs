@@ -10,6 +10,7 @@ const Viewer = () => {
         <MarkerView
           targetSrc={require('../../assets/sample-images/landscape_sm.jpg')}
           annotation={annotation}
+          // scaleStroke={false}
         />
       )}
     </SafeAreaView>

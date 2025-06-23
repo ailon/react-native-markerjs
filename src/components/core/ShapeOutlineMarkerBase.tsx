@@ -17,6 +17,7 @@ const ShapeOutlineMarkerBase: React.FC<ShapeOutlineMarkerBaseProps> = ({
   strokeDasharray,
   children,
   zoomFactor = 1,
+  scaleStroke = true,
   ...props
 }: ShapeOutlineMarkerBaseProps) => {
   return (
@@ -26,7 +27,7 @@ const ShapeOutlineMarkerBase: React.FC<ShapeOutlineMarkerBaseProps> = ({
         {...props}
         fill="transparent"
         stroke={strokeColor}
-        strokeWidth={(strokeWidth ?? 1) / zoomFactor}
+        strokeWidth={(strokeWidth ?? 1) / (scaleStroke ? zoomFactor : 1)}
         strokeDasharray={strokeDasharray}
       />
       {children}

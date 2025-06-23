@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import type { MarkerBaseState } from '../../core/MarkerBaseState';
 import { G } from 'react-native-svg';
@@ -14,20 +15,18 @@ interface MarkerBaseEditorProps extends ViewProps {
   gestureStartLocation?: GestureLocation;
   gestureMoveLocation?: GestureLocation;
   zoomFactor?: number;
+  scaleStroke?: boolean;
   onMarkerChange?: (marker: MarkerBaseState) => void;
   onMarkerCreate?: (marker: MarkerBaseState) => void;
   onSelect?: (marker: MarkerBaseState) => void;
 }
 
 const MarkerBaseEditor: React.FC<MarkerBaseEditorProps> = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   marker,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   mode = 'select',
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   zoomFactor = 1,
+  scaleStroke = true,
   children,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onSelect,
   ...props
 }: MarkerBaseEditorProps) => {

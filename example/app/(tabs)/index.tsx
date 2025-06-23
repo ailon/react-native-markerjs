@@ -32,6 +32,7 @@ const Editor = () => {
           ref={markerAreaRef}
           targetSrc={require('../../assets/sample-images/landscape.jpg')}
           annotation={annotation}
+          // scaleStroke={false}
           onAnnotationChange={handleAnnotationChange}
         />
       </View>

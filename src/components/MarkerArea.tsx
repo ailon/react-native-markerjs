@@ -31,13 +31,14 @@ export interface MarkerAreaHandle {
 interface MarkerAreaProps {
   targetSrc: string;
   annotation: AnnotationState | null;
+  scaleStroke?: boolean;
   onAnnotationChange?: (annotation: AnnotationState) => void;
 }
 
 type MarkerAreaMode = 'create' | 'select';
 
 const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
-  ({ targetSrc, annotation, onAnnotationChange }, ref) => {
+  ({ targetSrc, annotation, scaleStroke = true, onAnnotationChange }, ref) => {
     const [mode, setMode] = useState<MarkerAreaMode>('select');
 
     // selected marker ID
@@ -258,6 +259,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                   key={marker[markerIdSymbol] ?? index}
                   marker={marker}
                   zoomFactor={zoomFactor}
+                  scaleStroke={scaleStroke}
                   selected={selectedMarker === marker[markerIdSymbol]}
                   onSelect={(m: MarkerBaseState) =>
                     setSelectedMarker(m[markerIdSymbol] ?? null)
@@ -284,6 +286,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                 marker={creatingMarker}
                 mode={creatingEditorMode}
                 zoomFactor={zoomFactor}
+                scaleStroke={scaleStroke}
                 gestureStartLocation={gestureStartLocation ?? undefined}
                 gestureMoveLocation={gestureMoveLocation ?? undefined}
                 onMarkerChange={(m: MarkerBaseState) => {

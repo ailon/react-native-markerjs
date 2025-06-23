@@ -28,6 +28,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   gestureStartLocation,
   gestureMoveLocation,
   zoomFactor = 1,
+  scaleStroke = true,
   onSelect,
   onMarkerChange,
   onMarkerCreate,
@@ -265,7 +266,11 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       onResponderRelease={handleResponderRelease}
       onResponderTerminate={handleResponderRelease}
     >
-      <MarkerComponent zoomFactor={zoomFactor} {...marker}>
+      <MarkerComponent
+        zoomFactor={zoomFactor}
+        scaleStroke={scaleStroke}
+        {...marker}
+      >
         <G style={{ display: selected ? 'flex' : 'none' }}>
           {/* control box */}
           <Rect
