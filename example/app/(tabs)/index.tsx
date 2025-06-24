@@ -50,6 +50,7 @@ const Editor = () => {
           title="⭕️"
           onPress={() => handleMarkerCreate('EllipseFrameMarker')}
         />
+        <Button title="⎼" onPress={() => handleMarkerCreate('LineMarker')} />
       </View>
     </SafeAreaView>
   );

@@ -143,7 +143,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     // Handle gestures on the marker area
     const handleResponderGrant = (ev: GestureResponderEvent) => {
       if (mode === 'create' && markerTypeToCreate) {
-        console.log('Creating marker of type:', markerTypeToCreate);
+        // console.log('Creating marker of type:', markerTypeToCreate);
 
         setCreatingEditorMode('create');
 
@@ -156,6 +156,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
 
         const markerFactory = markerFactoryMap[markerTypeToCreate];
         if (markerFactory) {
+          // console.log(`Using marker factory for type: ${markerTypeToCreate}`);
           const newMarker = markerFactory.createMarker();
           setCreatingMarker(newMarker);
         }
