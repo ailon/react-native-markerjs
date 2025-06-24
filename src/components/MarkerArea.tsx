@@ -42,7 +42,8 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     const [mode, setMode] = useState<MarkerAreaMode>('select');
 
     // selected marker ID
-    const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+    const [selectedMarker, setSelectedMarker] =
+      useState<MarkerBaseState | null>(null);
 
     // type of marker to create in "create" mode
     const [markerTypeToCreate, setMarkerTypeToCreate] = useState<string | null>(
@@ -105,7 +106,8 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       deleteSelectedMarker: () => {
         if (annotation && selectedMarker && onAnnotationChange) {
           const updatedMarkers = annotation.markers.filter(
-            (marker) => marker[markerIdSymbol] !== selectedMarker
+            (marker) =>
+              marker[markerIdSymbol] !== selectedMarker[markerIdSymbol]
           );
           onAnnotationChange({ ...annotation, markers: updatedMarkers });
           setSelectedMarker(null);
@@ -264,9 +266,12 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                   marker={marker}
                   zoomFactor={zoomFactor}
                   scaleStroke={scaleStroke}
-                  selected={selectedMarker === marker[markerIdSymbol]}
+                  selected={
+                    selectedMarker !== null &&
+                    selectedMarker[markerIdSymbol] === marker[markerIdSymbol]
+                  }
                   onSelect={(m: MarkerBaseState) =>
-                    setSelectedMarker(m[markerIdSymbol] ?? null)
+                    setSelectedMarker(m ?? null)
                   }
                   onMarkerChange={(m: MarkerBaseState) => {
                     if (onAnnotationChange) {
@@ -306,7 +311,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                   }
                   setCreatingMarker(null);
                   setMode('select');
-                  setSelectedMarker(m[markerIdSymbol] ?? null);
+                  setSelectedMarker(m ?? null);
                 }}
               />
             )}
