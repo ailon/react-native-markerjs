@@ -2,10 +2,12 @@ import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
 import {
   MarkerArea,
   type MarkerAreaHandle,
+  type MarkerBaseState,
 } from '@markerjs/react-native-markerjs';
 import { useRef } from 'react';
 import { useAnnotationContext } from '../context/AnnotationContext';
 import { testState } from '../../sample-data/sample-state';
+import { markerIdSymbol } from '../../../src/core/MarkerBaseState';
 
 const Editor = () => {
   const { annotation, handleAnnotationChange } = useAnnotationContext();
@@ -13,6 +15,28 @@ const Editor = () => {
 
   const handleMarkerCreate = (markerType: string) => {
     markerAreaRef.current?.createMarker(markerType);
+  };
+
+  const handleSelectedMarkerChange = (marker: MarkerBaseState | null) => {
+    console.log('Selected marker changed:', marker);
+    // randomly update the marker's stroke color and width as PoC
+    if (marker && annotation) {
+      const updatedMarker = {
+        ...marker,
+        strokeColor: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+        strokeWidth: Math.floor(Math.random() * 5) + 2,
+      };
+
+      const updatedAnnotation = {
+        ...annotation,
+        markers: annotation.markers.map((mark) =>
+          mark[markerIdSymbol] === marker[markerIdSymbol]
+            ? { ...mark, ...updatedMarker }
+            : mark
+        ),
+      };
+      handleAnnotationChange(updatedAnnotation);
+    }
   };
 
   return (
@@ -33,6 +57,7 @@ const Editor = () => {
           targetSrc={require('../../assets/sample-images/landscape.jpg')}
           annotation={annotation}
           // scaleStroke={false}
+          onSelectedMarkerChange={handleSelectedMarkerChange}
           onAnnotationChange={handleAnnotationChange}
         />
       </View>

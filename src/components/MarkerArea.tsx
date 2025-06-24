@@ -32,13 +32,23 @@ interface MarkerAreaProps {
   targetSrc: string;
   annotation: AnnotationState | null;
   scaleStroke?: boolean;
+  onSelectedMarkerChange?: (marker: MarkerBaseState | null) => void;
   onAnnotationChange?: (annotation: AnnotationState) => void;
 }
 
 type MarkerAreaMode = 'create' | 'select';
 
 const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
-  ({ targetSrc, annotation, scaleStroke = true, onAnnotationChange }, ref) => {
+  (
+    {
+      targetSrc,
+      annotation,
+      scaleStroke = true,
+      onAnnotationChange,
+      onSelectedMarkerChange,
+    },
+    ref
+  ) => {
     const [mode, setMode] = useState<MarkerAreaMode>('select');
 
     // selected marker ID
@@ -111,6 +121,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
           );
           onAnnotationChange({ ...annotation, markers: updatedMarkers });
           setSelectedMarker(null);
+          onSelectedMarkerChange?.(null);
         }
       },
     }));
@@ -270,9 +281,14 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                     selectedMarker !== null &&
                     selectedMarker[markerIdSymbol] === marker[markerIdSymbol]
                   }
-                  onSelect={(m: MarkerBaseState) =>
-                    setSelectedMarker(m ?? null)
-                  }
+                  onSelect={(m: MarkerBaseState) => {
+                    if (
+                      selectedMarker?.[markerIdSymbol] !== m[markerIdSymbol]
+                    ) {
+                      setSelectedMarker(m ?? null);
+                      onSelectedMarkerChange?.(m ?? null);
+                    }
+                  }}
                   onMarkerChange={(m: MarkerBaseState) => {
                     if (onAnnotationChange) {
                       const updatedAnnotation = {
@@ -312,6 +328,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                   setCreatingMarker(null);
                   setMode('select');
                   setSelectedMarker(m ?? null);
+                  onSelectedMarkerChange?.(m ?? null);
                 }}
               />
             )}
