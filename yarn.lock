@@ -2689,6 +2689,7 @@ __metadata:
     "@expo/metro-runtime": ~5.0.4
     expo: ~53.0.11
     expo-linking: ^7.1.5
+    expo-media-library: ^17.1.7
     expo-router: ^5.1.0
     expo-status-bar: ~2.2.3
     react: 19.0.0
@@ -6724,6 +6725,16 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: dbb60e270316713d02bc2ee8e14a795bcc63ea8ce025114c3b50c4afc2cb5e2e7be727abd77266d7502c5593d3f23f9dee2f12f38930393348023a3f72edbb9d
+  languageName: node
+  linkType: hard
+
+"expo-media-library@npm:^17.1.7":
+  version: 17.1.7
+  resolution: "expo-media-library@npm:17.1.7"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: b4c4c00e656a2b8fead2ca9147c1be939778851c685b672d4ee03711da201641e2cdb5111aa8e2181dd902455d4fcd4774481a3159382b712beb979be2f96b5a
   languageName: node
   linkType: hard
 

@@ -8,7 +8,18 @@ import {
 import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
 import { markerComponentMap } from './core/markerComponentMap';
-import { useMemo, useState } from 'react';
+import {
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from 'react';
+
+export interface MarkerViewHandle {
+  visualRef: RefObject<View | null>;
+}
 
 interface MarkerViewProps {
   targetSrc: string;
@@ -16,84 +27,90 @@ interface MarkerViewProps {
   scaleStroke?: boolean;
 }
 
-const MarkerView: React.FC<MarkerViewProps> = ({
-  targetSrc,
-  annotation,
-  scaleStroke = true,
-}) => {
-  const [annotatedImageSize, setAnnotatedImageSize] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
-  const [layoutSize, setLayoutSize] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
+const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
+  ({ targetSrc, annotation, scaleStroke = true }, ref) => {
+    const [annotatedImageSize, setAnnotatedImageSize] = useState<{
+      width: number;
+      height: number;
+    } | null>(null);
+    const [layoutSize, setLayoutSize] = useState<{
+      width: number;
+      height: number;
+    } | null>(null);
 
-  const zoomFactor = useMemo(() => {
-    if (annotatedImageSize && layoutSize) {
-      // fit the annotated image to the layout size
+    const visualRef = useRef<View>(null);
 
-      // Calculate scale to fit the image within the layout while preserving aspect ratio
-      const imgWidth = annotation?.width ?? annotatedImageSize.width;
-      const imgHeight = annotation?.height ?? annotatedImageSize.height;
-      const layoutAspect = layoutSize.width / layoutSize.height;
-      const imgAspect = imgWidth / imgHeight;
+    useImperativeHandle(ref, () => ({
+      visualRef,
+    }));
 
-      if (imgAspect > layoutAspect) {
-        // Image is wider than layout, fit width
-        return layoutSize.width / imgWidth;
-      } else {
-        // Image is taller than layout, fit height
-        return layoutSize.height / imgHeight;
+    const zoomFactor = useMemo(() => {
+      if (annotatedImageSize && layoutSize) {
+        // fit the annotated image to the layout size
+
+        // Calculate scale to fit the image within the layout while preserving aspect ratio
+        const imgWidth = annotation?.width ?? annotatedImageSize.width;
+        const imgHeight = annotation?.height ?? annotatedImageSize.height;
+        const layoutAspect = layoutSize.width / layoutSize.height;
+        const imgAspect = imgWidth / imgHeight;
+
+        if (imgAspect > layoutAspect) {
+          // Image is wider than layout, fit width
+          return layoutSize.width / imgWidth;
+        } else {
+          // Image is taller than layout, fit height
+          return layoutSize.height / imgHeight;
+        }
       }
-    }
-    return 1;
-  }, [annotatedImageSize, layoutSize, annotation?.width, annotation?.height]);
+      return 1;
+    }, [annotatedImageSize, layoutSize, annotation?.width, annotation?.height]);
 
-  const handleAnnotatedImageLoad = (
-    ev: NativeSyntheticEvent<ImageLoadEventData>
-  ) => {
-    if (annotation) {
-      const { width, height } = ev.nativeEvent.source;
-      // Update the annotated image size
-      setAnnotatedImageSize({ width, height });
-    }
-  };
+    const handleAnnotatedImageLoad = (
+      ev: NativeSyntheticEvent<ImageLoadEventData>
+    ) => {
+      if (annotation) {
+        const { width, height } = ev.nativeEvent.source;
+        // Update the annotated image size
+        setAnnotatedImageSize({ width, height });
+      }
+    };
 
-  const handleAnnotationLayout = (ev: LayoutChangeEvent) => {
-    const { width, height } = ev.nativeEvent.layout;
-    setLayoutSize({ width, height });
-  };
+    const handleAnnotationLayout = (ev: LayoutChangeEvent) => {
+      const { width, height } = ev.nativeEvent.layout;
+      setLayoutSize({ width, height });
+    };
 
-  return (
-    <View style={styles.container} onLayout={handleAnnotationLayout}>
-      <Svg
-        width={annotation.width * zoomFactor}
-        height={annotation.height * zoomFactor}
-        viewBox={`0 0 ${annotation.width} ${annotation.height}`}
-      >
-        <Image
-          href={targetSrc}
-          width={annotation.width}
-          height={annotation.height}
-          onLoad={handleAnnotatedImageLoad}
-        />
-        {annotation.markers.map((marker, index) => {
-          const MarkerComponent = markerComponentMap[marker.typeName];
-          return MarkerComponent ? (
-            <MarkerComponent
-              key={index}
-              zoomFactor={zoomFactor}
-              scaleStroke={scaleStroke}
-              {...marker}
+    return (
+      <View style={styles.container} onLayout={handleAnnotationLayout}>
+        <View ref={visualRef} collapsable={false}>
+          <Svg
+            width={annotation.width * zoomFactor}
+            height={annotation.height * zoomFactor}
+            viewBox={`0 0 ${annotation.width} ${annotation.height}`}
+          >
+            <Image
+              href={targetSrc}
+              width={annotation.width}
+              height={annotation.height}
+              onLoad={handleAnnotatedImageLoad}
             />
-          ) : null;
-        })}
-      </Svg>
-    </View>
-  );
-};
+            {annotation.markers.map((marker, index) => {
+              const MarkerComponent = markerComponentMap[marker.typeName];
+              return MarkerComponent ? (
+                <MarkerComponent
+                  key={index}
+                  zoomFactor={zoomFactor}
+                  scaleStroke={scaleStroke}
+                  {...marker}
+                />
+              ) : null;
+            })}
+          </Svg>
+        </View>
+      </View>
+    );
+  }
+);
 
 export default MarkerView;
 
