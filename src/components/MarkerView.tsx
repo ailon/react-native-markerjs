@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  View,
-  type ImageLoadEventData,
-  type LayoutChangeEvent,
-  type NativeSyntheticEvent,
-} from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
 import { markerComponentMap } from './core/markerComponentMap';
@@ -29,10 +23,6 @@ interface MarkerViewProps {
 
 const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
   ({ targetSrc, annotation, scaleStroke = true }, ref) => {
-    const [annotatedImageSize, setAnnotatedImageSize] = useState<{
-      width: number;
-      height: number;
-    } | null>(null);
     const [layoutSize, setLayoutSize] = useState<{
       width: number;
       height: number;
@@ -45,12 +35,12 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
     }));
 
     const zoomFactor = useMemo(() => {
-      if (annotatedImageSize && layoutSize) {
+      if (layoutSize) {
         // fit the annotated image to the layout size
 
         // Calculate scale to fit the image within the layout while preserving aspect ratio
-        const imgWidth = annotation?.width ?? annotatedImageSize.width;
-        const imgHeight = annotation?.height ?? annotatedImageSize.height;
+        const imgWidth = annotation.width;
+        const imgHeight = annotation.height;
         const layoutAspect = layoutSize.width / layoutSize.height;
         const imgAspect = imgWidth / imgHeight;
 
@@ -63,17 +53,7 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
         }
       }
       return 1;
-    }, [annotatedImageSize, layoutSize, annotation?.width, annotation?.height]);
-
-    const handleAnnotatedImageLoad = (
-      ev: NativeSyntheticEvent<ImageLoadEventData>
-    ) => {
-      if (annotation) {
-        const { width, height } = ev.nativeEvent.source;
-        // Update the annotated image size
-        setAnnotatedImageSize({ width, height });
-      }
-    };
+    }, [layoutSize, annotation.width, annotation.height]);
 
     const handleAnnotationLayout = (ev: LayoutChangeEvent) => {
       const { width, height } = ev.nativeEvent.layout;
@@ -92,7 +72,6 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
               href={targetSrc}
               width={annotation.width}
               height={annotation.height}
-              onLoad={handleAnnotatedImageLoad}
             />
             {annotation.markers.map((marker, index) => {
               const MarkerComponent = markerComponentMap[marker.typeName];
