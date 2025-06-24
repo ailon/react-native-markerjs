@@ -193,6 +193,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     ) => {
       if (annotation === null) {
         const { width, height } = ev.nativeEvent.source;
+        setAnnotatedImageSize({ width, height });
         if (onAnnotationChange) {
           onAnnotationChange({
             version: 3,
@@ -225,7 +226,9 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
         onLayout={handleAnnotationLayout}
       >
         {annotation === null && (
-          <Image href={targetSrc} onLoad={handleInitialImageLoad} />
+          <Svg>
+            <Image href={targetSrc} onLoad={handleInitialImageLoad} />
+          </Svg>
         )}
         {annotation && (
           <Svg
