@@ -28,5 +28,15 @@ export const testState: AnnotationState = {
       strokeWidth: 2,
       rotationAngle: 45,
     } as MarkerBaseState,
+    {
+      typeName: 'LineMarker',
+      x1: 100,
+      y1: 100,
+      x2: 300,
+      y2: 200,
+      strokeColor: 'green',
+      strokeWidth: 3,
+      rotationAngle: 45,
+    } as MarkerBaseState,
   ],
 };
