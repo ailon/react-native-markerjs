@@ -29,6 +29,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   gestureMoveLocation,
   zoomFactor = 1,
   scaleStroke = true,
+  disableInteraction = false,
   onSelect,
   onMarkerChange,
   onMarkerCreate,
@@ -260,6 +261,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   return (
     <MarkerBaseEditor
       marker={marker}
+      disableInteraction={disableInteraction}
       onSelect={onSelect}
       onResponderGrant={handleResponderGrant}
       onResponderMove={handleResponderMove}
@@ -271,55 +273,57 @@ const RectangularBoxMarkerBaseEditor: React.FC<
         scaleStroke={scaleStroke}
         {...marker}
       >
-        <G style={{ display: selected ? 'flex' : 'none' }}>
-          {/* control box */}
-          <Rect
-            x="0"
-            y="0"
-            width={marker.width}
-            height={marker.height}
-            fill="transparent"
-            stroke="black"
-            strokeWidth={0.5 / zoomFactor}
-            strokeDasharray="3, 2"
-          />
-          <Line
-            x1={marker.width / 2}
-            y1="0"
-            x2={marker.width / 2}
-            y2={rotatorOffset / zoomFactor}
-            stroke="black"
-            strokeWidth={0.5 / zoomFactor}
-            strokeDasharray="3, 2"
-          />
+        {selected && !disableInteraction && (
           <G>
-            {/* grips */}
-            <Grip
-              x={marker.width}
-              y={marker.height}
-              zoomFactor={zoomFactor}
-              onStartShouldSetResponder={() => {
-                setManipulationMode('resize');
-                return true;
-              }}
-              onResponderGrant={handleResponderGrant}
-              onResponderMove={handleResponderMove}
-              onResponderRelease={handleResponderRelease}
-              onResponderTerminate={handleResponderRelease}
+            {/* control box */}
+            <Rect
+              x="0"
+              y="0"
+              width={marker.width}
+              height={marker.height}
+              fill="transparent"
+              stroke="black"
+              strokeWidth={0.5 / zoomFactor}
+              strokeDasharray="3, 2"
             />
-            <Grip
-              flipColors
-              x={marker.width / 2}
-              y={rotatorOffset / zoomFactor}
-              zoomFactor={zoomFactor}
-              onStartShouldSetResponder={handleRotatorShouldSetResponder}
-              onResponderGrant={handleResponderGrant}
-              onResponderMove={handleResponderMove}
-              onResponderRelease={handleResponderRelease}
-              onResponderTerminate={handleResponderRelease}
+            <Line
+              x1={marker.width / 2}
+              y1="0"
+              x2={marker.width / 2}
+              y2={rotatorOffset / zoomFactor}
+              stroke="black"
+              strokeWidth={0.5 / zoomFactor}
+              strokeDasharray="3, 2"
             />
+            <G>
+              {/* grips */}
+              <Grip
+                x={marker.width}
+                y={marker.height}
+                zoomFactor={zoomFactor}
+                onStartShouldSetResponder={() => {
+                  setManipulationMode('resize');
+                  return true;
+                }}
+                onResponderGrant={handleResponderGrant}
+                onResponderMove={handleResponderMove}
+                onResponderRelease={handleResponderRelease}
+                onResponderTerminate={handleResponderRelease}
+              />
+              <Grip
+                flipColors
+                x={marker.width / 2}
+                y={rotatorOffset / zoomFactor}
+                zoomFactor={zoomFactor}
+                onStartShouldSetResponder={handleRotatorShouldSetResponder}
+                onResponderGrant={handleResponderGrant}
+                onResponderMove={handleResponderMove}
+                onResponderRelease={handleResponderRelease}
+                onResponderTerminate={handleResponderRelease}
+              />
+            </G>
           </G>
-        </G>
+        )}
       </MarkerComponent>
     </MarkerBaseEditor>
   );

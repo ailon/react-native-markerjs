@@ -16,6 +16,7 @@ interface MarkerBaseEditorProps extends ViewProps {
   gestureMoveLocation?: GestureLocation;
   zoomFactor?: number;
   scaleStroke?: boolean;
+  disableInteraction?: boolean;
   onMarkerChange?: (marker: MarkerBaseState) => void;
   onMarkerCreate?: (marker: MarkerBaseState) => void;
   onSelect?: (marker: MarkerBaseState) => void;
@@ -26,12 +27,13 @@ const MarkerBaseEditor: React.FC<MarkerBaseEditorProps> = ({
   mode = 'select',
   zoomFactor = 1,
   scaleStroke = true,
+  disableInteraction = false,
   children,
   onSelect,
   ...props
 }: MarkerBaseEditorProps) => {
   return (
-    <G onStartShouldSetResponder={() => true} {...props}>
+    <G onStartShouldSetResponder={() => !disableInteraction} {...props}>
       {children}
     </G>
   );

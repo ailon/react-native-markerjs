@@ -24,6 +24,7 @@ const LinearMarkerBaseEditor: React.FC<LinearMarkerBaseEditorProps> = ({
   gestureMoveLocation,
   zoomFactor = 1,
   scaleStroke = true,
+  disableInteraction = false,
   onSelect,
   onMarkerChange,
   onMarkerCreate,
@@ -186,6 +187,7 @@ const LinearMarkerBaseEditor: React.FC<LinearMarkerBaseEditorProps> = ({
   return (
     <MarkerBaseEditor
       marker={marker}
+      disableInteraction={disableInteraction}
       onSelect={onSelect}
       onResponderGrant={handleResponderGrant}
       onResponderMove={handleResponderMove}
@@ -197,9 +199,9 @@ const LinearMarkerBaseEditor: React.FC<LinearMarkerBaseEditorProps> = ({
         scaleStroke={scaleStroke}
         {...marker}
       >
-        <G style={{ display: selected ? 'flex' : 'none' }}>
-          {/* control box */}
+        {selected && !disableInteraction && (
           <G>
+            {/* control box */}
             {/* grips */}
             <Grip
               x={marker.x1}
@@ -230,7 +232,7 @@ const LinearMarkerBaseEditor: React.FC<LinearMarkerBaseEditorProps> = ({
               onResponderTerminate={handleResponderRelease}
             />
           </G>
-        </G>
+        )}
       </MarkerComponent>
     </MarkerBaseEditor>
   );

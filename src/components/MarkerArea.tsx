@@ -277,6 +277,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                   marker={marker}
                   zoomFactor={zoomFactor}
                   scaleStroke={scaleStroke}
+                  disableInteraction={mode === 'create'}
                   selected={
                     selectedMarker !== null &&
                     selectedMarker[markerIdSymbol] === marker[markerIdSymbol]
