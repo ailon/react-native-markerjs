@@ -20,6 +20,17 @@ const LinearMarkerBase: React.FC<LinearMarkerBaseProps> = ({
   return (
     <MarkerBase {...props}>
       <G>
+        {/* Transparent path for interaction */}
+        <Path
+          d={d}
+          {...props}
+          fill="transparent"
+          stroke="transparent"
+          strokeWidth={Math.max(
+            (strokeWidth ?? 1) / (scaleStroke ? zoomFactor : 1),
+            20 // ensure a minimum stroke width for interaction
+          )}
+        />
         <Path
           d={d}
           {...props}
