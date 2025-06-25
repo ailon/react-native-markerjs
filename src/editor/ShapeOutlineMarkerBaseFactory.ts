@@ -2,6 +2,7 @@ import type { ShapeOutlineMarkerBaseState } from '../core/ShapeOutlineMarkerBase
 import { MarkerBaseFactory } from './MarkerBaseFactory';
 
 export class ShapeOutlineMarkerBaseFactory extends MarkerBaseFactory {
+  public static typeName = 'ShapeOutlineMarkerBase';
   public static override createMarker(): ShapeOutlineMarkerBaseState {
     return {
       ...super.createMarker(),

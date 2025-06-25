@@ -2,6 +2,7 @@ import type { LinearMarkerBaseState } from '../core/LinearMarkerBaseState';
 import { MarkerBaseFactory } from './MarkerBaseFactory';
 
 export class LinearMarkerBaseFactory extends MarkerBaseFactory {
+  public static typeName = 'LinearMarkerBase';
   public static override createMarker(): LinearMarkerBaseState {
     return {
       ...super.createMarker(),

@@ -2,9 +2,11 @@ import { markerIdSymbol, type MarkerBaseState } from '../core/MarkerBaseState';
 import { generateMarkerId } from './markerIdGenerator';
 
 export class MarkerBaseFactory {
+  public static typeName = 'MarkerBase';
+
   public static createMarker(): MarkerBaseState {
     return {
-      typeName: 'MarkerBase',
+      typeName: this.typeName,
       strokeColor: 'red',
       strokeWidth: 3,
       strokeDasharray: '',
