@@ -3,7 +3,7 @@ import React, { createContext, useContext } from 'react';
 
 type AnnotationContextType = {
   annotation: AnnotationState | null;
-  handleAnnotationChange: (newAnnotation: AnnotationState | null) => void;
+  setAnnotation: (newAnnotation: AnnotationState | null) => void;
 };
 
 const AnnotationContext = createContext<AnnotationContextType | undefined>(
@@ -30,7 +30,9 @@ export const AnnotationProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <AnnotationContext.Provider value={{ annotation, handleAnnotationChange }}>
+    <AnnotationContext.Provider
+      value={{ annotation, setAnnotation: handleAnnotationChange }}
+    >
       {children}
     </AnnotationContext.Provider>
   );

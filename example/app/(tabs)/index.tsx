@@ -10,7 +10,7 @@ import { testState } from '../../sample-data/sample-state';
 // import { markerIdSymbol } from '../../../src/core/MarkerBaseState';
 
 const Editor = () => {
-  const { annotation, handleAnnotationChange } = useAnnotationContext();
+  const { annotation, setAnnotation } = useAnnotationContext();
   const markerAreaRef = useRef<MarkerAreaHandle>(null);
 
   const handleMarkerCreate = (markerType: string) => {
@@ -48,12 +48,9 @@ const Editor = () => {
       <View style={styles.topToolbar}>
         <Button
           title="Load sample state"
-          onPress={() => handleAnnotationChange(testState)}
+          onPress={() => setAnnotation(testState)}
         />
-        <Button
-          title="Reset state"
-          onPress={() => handleAnnotationChange(null)}
-        />
+        <Button title="Reset state" onPress={() => setAnnotation(null)} />
       </View>
       <View style={styles.markerAreaContainer}>
         <MarkerArea
@@ -62,7 +59,7 @@ const Editor = () => {
           annotation={annotation}
           // scaleStroke={false}
           onSelectedMarkerChange={handleSelectedMarkerChange}
-          onAnnotationChange={handleAnnotationChange}
+          onAnnotationChange={setAnnotation}
         />
       </View>
       <View style={styles.toolbar}>
