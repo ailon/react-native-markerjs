@@ -1,6 +1,6 @@
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { MarkerView } from '@markerjs/react-native-markerjs';
-import { useAnnotationContext } from '../context/AnnotationContext';
+import { useAnnotationContext } from '@markerjs/react-native-markerjs';
 
 const Viewer = () => {
   const { annotation } = useAnnotationContext();

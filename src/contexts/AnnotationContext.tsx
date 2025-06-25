@@ -1,4 +1,4 @@
-import type { AnnotationState } from '@markerjs/react-native-markerjs';
+import type { AnnotationState } from '../core/AnnotationState';
 import React, { createContext, useContext } from 'react';
 
 type AnnotationContextType = {
@@ -35,5 +35,3 @@ export const AnnotationProvider: React.FC<{ children: React.ReactNode }> = ({
     </AnnotationContext.Provider>
   );
 };
-
-export default AnnotationProvider;

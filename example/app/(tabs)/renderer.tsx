@@ -8,9 +8,9 @@ import {
 } from 'react-native';
 import {
   MarkerView,
+  useAnnotationContext,
   type MarkerViewHandle,
 } from '@markerjs/react-native-markerjs';
-import { useAnnotationContext } from '../context/AnnotationContext';
 import { useRef } from 'react';
 import { captureRef } from 'react-native-view-shot';
 import * as MediaLibrary from 'expo-media-library';

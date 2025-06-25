@@ -9,6 +9,11 @@ export type { RectangularBoxMarkerBaseState } from './core/RectangularBoxMarkerB
 export type { ShapeOutlineMarkerBaseState } from './core/ShapeOutlineMarkerBaseState';
 export type { LinearMarkerBaseState } from './core/LinearMarkerBaseState';
 
+export {
+  AnnotationProvider,
+  useAnnotationContext,
+} from './contexts/AnnotationContext';
+
 // state helpers
 export {
   createNewAnnotationState,

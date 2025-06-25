@@ -1,11 +1,11 @@
 import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
 import {
   MarkerArea,
+  useAnnotationContext,
   type MarkerAreaHandle,
   type MarkerBaseState,
 } from '@markerjs/react-native-markerjs';
 import { useRef } from 'react';
-import { useAnnotationContext } from '../context/AnnotationContext';
 import { testState } from '../../sample-data/sample-state';
 // import { markerIdSymbol } from '../../../src/core/MarkerBaseState';
 

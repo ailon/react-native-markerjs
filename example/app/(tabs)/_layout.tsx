@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Platform } from 'react-native';
-import { AnnotationProvider } from '../context/AnnotationContext';
+import { AnnotationProvider } from '@markerjs/react-native-markerjs';
 
 export default function TabLayout() {
   return (
