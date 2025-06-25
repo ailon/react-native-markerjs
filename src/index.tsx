@@ -8,3 +8,10 @@ export type { MarkerBaseState } from './core/MarkerBaseState';
 export type { RectangularBoxMarkerBaseState } from './core/RectangularBoxMarkerBaseState';
 export type { ShapeOutlineMarkerBaseState } from './core/ShapeOutlineMarkerBaseState';
 export type { LinearMarkerBaseState } from './core/LinearMarkerBaseState';
+
+// state helpers
+export {
+  createNewAnnotationState,
+  addMarkerToAnnotation,
+  updateMarkerInAnnotation,
+} from './utils/stateHelpers';

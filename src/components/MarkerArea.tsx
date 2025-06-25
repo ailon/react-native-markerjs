@@ -21,6 +21,11 @@ import type { GestureLocation } from '../editor/GestureLocation';
 import type { EditorMode } from './editor/MarkerBaseEditor';
 import { editorComponentMap } from './editor/editorComponentMap';
 import { markerFactoryMap } from '../editor/markerFactoryMap';
+import {
+  addMarkerToAnnotation,
+  createNewAnnotationState,
+  updateMarkerInAnnotation,
+} from '../utils/stateHelpers';
 
 export interface MarkerAreaHandle {
   createMarker: (markerType: string) => void;
@@ -209,12 +214,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
         const { width, height } = ev.nativeEvent.source;
         setAnnotatedImageSize({ width, height });
         if (onAnnotationChange) {
-          onAnnotationChange({
-            version: 3,
-            width,
-            height,
-            markers: [],
-          });
+          onAnnotationChange(createNewAnnotationState(width, height));
         }
       }
     };
@@ -291,15 +291,9 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                   }}
                   onMarkerChange={(m: MarkerBaseState) => {
                     if (onAnnotationChange) {
-                      const updatedAnnotation = {
-                        ...annotation,
-                        markers: annotation.markers.map((mark) =>
-                          mark[markerIdSymbol] === m[markerIdSymbol]
-                            ? { ...mark, ...m }
-                            : mark
-                        ),
-                      };
-                      onAnnotationChange(updatedAnnotation);
+                      onAnnotationChange(
+                        updateMarkerInAnnotation(annotation, m)
+                      );
                     }
                   }}
                 />
@@ -318,13 +312,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                   setCreatingMarker(m);
                 }}
                 onMarkerCreate={(m: MarkerBaseState) => {
-                  if (onAnnotationChange) {
-                    const updatedAnnotation = {
-                      ...annotation,
-                      markers: [...annotation.markers, m],
-                    };
-                    onAnnotationChange(updatedAnnotation);
-                  }
+                  onAnnotationChange?.(addMarkerToAnnotation(annotation, m));
                   setCreatingMarker(null);
                   setMode('select');
                   setSelectedMarker(m ?? null);
