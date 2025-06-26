@@ -4,6 +4,7 @@ import { EllipseFrameMarkerFactory } from './EllipseFrameMarkerFactory';
 import { LineMarkerFactory } from './LineMarkerFactory';
 import { FreehandMarkerFactory } from './FreehandMarkerFactory';
 import { CustomImageMarkerFactory } from './CustomImageMarkerFactory';
+import { PolygonMarkerFactory } from './PolygonMarkerFactory';
 
 export const markerFactoryMap: Record<string, typeof MarkerBaseFactory> = {
   FrameMarker: FrameMarkerFactory,
@@ -11,5 +12,6 @@ export const markerFactoryMap: Record<string, typeof MarkerBaseFactory> = {
   LineMarker: LineMarkerFactory,
   FreehandMarker: FreehandMarkerFactory,
   CustomImageMarker: CustomImageMarkerFactory,
+  PolygonMarker: PolygonMarkerFactory,
   // Add more mappings here as you add more marker types
 };

@@ -10,6 +10,7 @@ export type { ShapeOutlineMarkerBaseState } from './core/ShapeOutlineMarkerBaseS
 export type { LinearMarkerBaseState } from './core/LinearMarkerBaseState';
 export type { FreehandMarkerState } from './core/FreehandMarkerState';
 export type { ImageMarkerBaseState } from './core/ImageMarkerBaseState';
+export type { PolygonMarkerState } from './core/PolygonMarkerState';
 
 export {
   AnnotationProvider,

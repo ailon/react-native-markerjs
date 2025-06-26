@@ -85,6 +85,7 @@ const Editor = () => {
           title="🖌️"
           onPress={() => handleMarkerCreate('FreehandMarker')}
         />
+        <Button title="△" onPress={() => handleMarkerCreate('PolygonMarker')} />
         <Button
           title="🙂"
           onPress={() =>
