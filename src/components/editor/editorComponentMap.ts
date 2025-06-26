@@ -7,5 +7,6 @@ export const editorComponentMap: Record<string, React.ComponentType<any>> = {
   EllipseFrameMarker: RectangularBoxMarkerBaseEditor,
   LineMarker: LinearMarkerBaseEditor,
   FreehandMarker: FreehandMarkerEditor,
+  CustomImageMarker: RectangularBoxMarkerBaseEditor,
   // Add more mappings here as you add more marker types
 };

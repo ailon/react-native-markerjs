@@ -1,4 +1,5 @@
-import { SvgXml } from 'react-native-svg';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { G, Rect, SvgXml } from 'react-native-svg';
 import RectangularBoxMarkerBase, {
   type RectangularBoxMarkerBaseProps,
 } from './RectangularBoxMarkerBase';
@@ -9,17 +10,30 @@ interface ImageMarkerBaseProps
     ImageMarkerBaseState {}
 
 const ImageMarkerBase: React.FC<ImageMarkerBaseProps> = ({
+  strokeColor,
+  strokeWidth,
+  strokeDasharray,
+  zoomFactor = 1,
+  scaleStroke = true,
   svgString,
   children,
   ...props
 }: ImageMarkerBaseProps) => {
-  console.log('ImageMarkerBase props:', props);
-  console.log('ImageMarkerBase svgString:', svgString);
   return (
     <RectangularBoxMarkerBase {...props}>
-      {svgString && (
-        <SvgXml xml={svgString} width={props.width} height={props.height} />
-      )}
+      <G>
+        {svgString && (
+          <SvgXml xml={svgString} width={props.width} height={props.height} />
+        )}
+        <Rect
+          x={0}
+          y={0}
+          width={props.width}
+          height={props.height}
+          fill="transparent"
+          stroke="transparent"
+        />
+      </G>
       {children}
     </RectangularBoxMarkerBase>
   );
