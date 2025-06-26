@@ -234,6 +234,21 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       setLayoutSize({ width, height });
     };
 
+    const handleMarkerCreate = (m: MarkerBaseState, continuous = false) => {
+      if (!annotation || !onAnnotationChange) return;
+
+      onAnnotationChange(addMarkerToAnnotation(annotation, m));
+
+      setCreatingMarker(null);
+      setMode('select');
+      setSelectedMarker(m ?? null);
+      onSelectedMarkerChange?.(m ?? null);
+
+      if (continuous) {
+        createMarker(m.typeName);
+      }
+    };
+
     return (
       <View
         style={{ ...styles.container, opacity: annotation ? 1 : 0 }}
@@ -312,13 +327,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                 onMarkerChange={(m: MarkerBaseState) => {
                   setCreatingMarker(m);
                 }}
-                onMarkerCreate={(m: MarkerBaseState) => {
-                  onAnnotationChange?.(addMarkerToAnnotation(annotation, m));
-                  setCreatingMarker(null);
-                  setMode('select');
-                  setSelectedMarker(m ?? null);
-                  onSelectedMarkerChange?.(m ?? null);
-                }}
+                onMarkerCreate={handleMarkerCreate}
               />
             )}
           </Svg>

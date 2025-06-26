@@ -18,7 +18,7 @@ interface MarkerBaseEditorProps extends ViewProps {
   scaleStroke?: boolean;
   disableInteraction?: boolean;
   onMarkerChange?: (marker: MarkerBaseState) => void;
-  onMarkerCreate?: (marker: MarkerBaseState) => void;
+  onMarkerCreate?: (marker: MarkerBaseState, continuous?: boolean) => void;
   onSelect?: (marker: MarkerBaseState) => void;
 }
 

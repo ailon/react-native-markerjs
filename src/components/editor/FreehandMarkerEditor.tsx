@@ -150,7 +150,7 @@ const FreehandMarkerEditor: React.FC<FreehandMarkerEditorProps> = ({
         ...marker,
       };
       if (onMarkerCreate) {
-        onMarkerCreate(sanitizedMarker);
+        onMarkerCreate(sanitizedMarker, true);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
