@@ -38,5 +38,16 @@ export const testState: AnnotationState = {
       strokeWidth: 3,
       rotationAngle: 45,
     } as MarkerBaseState,
+    {
+      typeName: 'FreehandMarker',
+      points: [
+        { x: 10, y: 100 },
+        { x: 350, y: 150 },
+        { x: 310, y: 220 },
+      ],
+      strokeColor: 'pink',
+      strokeWidth: 3,
+      rotationAngle: 45,
+    } as MarkerBaseState,
   ],
 };
