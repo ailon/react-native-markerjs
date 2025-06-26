@@ -9,6 +9,7 @@ export type { RectangularBoxMarkerBaseState } from './core/RectangularBoxMarkerB
 export type { ShapeOutlineMarkerBaseState } from './core/ShapeOutlineMarkerBaseState';
 export type { LinearMarkerBaseState } from './core/LinearMarkerBaseState';
 export type { FreehandMarkerState } from './core/FreehandMarkerState';
+export type { ImageMarkerBaseState } from './core/ImageMarkerBaseState';
 
 export {
   AnnotationProvider,

@@ -28,7 +28,7 @@ import {
 } from '../utils/stateHelpers';
 
 export interface MarkerAreaHandle {
-  createMarker: (markerType: string) => void;
+  createMarker: (markerType: string, params?: Partial<MarkerBaseState>) => void;
   switchToSelectMode: () => void;
   deleteSelectedMarker: () => void;
 }
@@ -64,6 +64,9 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     const [markerTypeToCreate, setMarkerTypeToCreate] = useState<string | null>(
       null
     );
+    const [markerTypeToCreateParams, setMarkerTypeToCreateParams] =
+      useState<Partial<MarkerBaseState> | null>(null);
+
     // marker being created in "create" mode
     const [creatingMarker, setCreatingMarker] =
       useState<MarkerBaseState | null>(null);
@@ -109,8 +112,12 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     }, [annotatedImageSize, layoutSize, annotation?.width, annotation?.height]);
 
     // initiates marker creation
-    const createMarker = (markerType: string) => {
+    const createMarker = (
+      markerType: string,
+      params?: Partial<MarkerBaseState>
+    ) => {
       setMarkerTypeToCreate(markerType);
+      setMarkerTypeToCreateParams(params ?? null);
       setMode('create');
     };
 
@@ -175,7 +182,9 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
         const markerFactory = markerFactoryMap[markerTypeToCreate];
         if (markerFactory) {
           // console.log(`Using marker factory for type: ${markerTypeToCreate}`);
-          const newMarker = markerFactory.createMarker();
+          const newMarker = markerFactory.createMarker(
+            markerTypeToCreateParams ?? undefined
+          );
           setCreatingMarker(newMarker);
         }
       }

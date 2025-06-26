@@ -3,7 +3,9 @@ import { MarkerBaseFactory } from './MarkerBaseFactory';
 
 export class ImageMarkerBaseFactory extends MarkerBaseFactory {
   public static typeName = 'ImageMarkerBase';
-  public static override createMarker(): ImageMarkerBaseState {
+  public static override createMarker(
+    params?: Partial<ImageMarkerBaseState>
+  ): ImageMarkerBaseState {
     return {
       ...super.createMarker(),
       left: 0,
@@ -12,6 +14,7 @@ export class ImageMarkerBaseFactory extends MarkerBaseFactory {
       height: 0,
       strokeDasharray: '',
       rotationAngle: 0,
+      ...params,
     };
   }
 }
