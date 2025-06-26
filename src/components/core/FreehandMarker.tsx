@@ -17,14 +17,16 @@ const FreehandMarker: React.FC<FreehandMarkerProps> = ({
 }: FreehandMarkerProps) => {
   return (
     <MarkerBase {...props}>
-      <Path
-        d={`M ${points.map((p) => `${p.x} ${p.y}`).join(' L ')}`}
-        {...props}
-        fill="transparent"
-        stroke={strokeColor}
-        strokeWidth={(strokeWidth ?? 1) / (scaleStroke ? zoomFactor : 1)}
-        strokeDasharray={strokeDasharray}
-      />
+      {points.length > 0 && (
+        <Path
+          d={`M ${points.map((p) => `${p.x} ${p.y}`).join(' L ')}`}
+          {...props}
+          fill="transparent"
+          stroke={strokeColor}
+          strokeWidth={(strokeWidth ?? 1) / (scaleStroke ? zoomFactor : 1)}
+          strokeDasharray={strokeDasharray}
+        />
+      )}
       {children}
     </MarkerBase>
   );
