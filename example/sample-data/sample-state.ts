@@ -81,5 +81,19 @@ export const testState: AnnotationState = {
       opacity: 1,
       notes: 'Smile for the camera!',
     } as MarkerBaseState,
+    {
+      points: [
+        { x: 140.89453125, y: 241.3125 },
+        { x: 220.05859375, y: 281.25390625 },
+        { x: 259.6328125, y: 194.7265625 },
+        { x: 171.1484375, y: 163.9296875 },
+      ],
+      fillColor: 'rgba(255, 0, 0, 0.5)',
+      typeName: 'PolygonMarker',
+      strokeColor: '#ff0000',
+      strokeWidth: 3,
+      strokeDasharray: '',
+      opacity: 1,
+    } as MarkerBaseState,
   ],
 };
