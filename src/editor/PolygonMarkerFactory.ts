@@ -6,12 +6,7 @@ export class PolygonMarkerFactory extends MarkerBaseFactory {
   public static override createMarker(): PolygonMarkerState {
     return {
       ...super.createMarker(),
-      points: [
-        { x: 0, y: 0 },
-        { x: 0, y: 0 },
-        { x: 0, y: 0 },
-        { x: 0, y: 0 },
-      ],
+      points: [],
     };
   }
 }

@@ -212,7 +212,11 @@ const PolygonMarkerEditor: React.FC<PolygonMarkerEditorProps> = ({
       if (marker.points.length === 0) {
         const updatedMarker: PolygonMarkerState = {
           ...marker,
-          points: [{ x: newX, y: newY }],
+          points: [
+            { x: newX, y: newY },
+            { x: newX, y: newY },
+            { x: newX, y: newY },
+          ],
         };
 
         if (onMarkerChange) {
@@ -234,21 +238,17 @@ const PolygonMarkerEditor: React.FC<PolygonMarkerEditorProps> = ({
 
       const isMovedFromLastPoint =
         marker.points &&
-        marker.points.length > 0 &&
-        marker.points[0] &&
-        (marker.points[marker.points.length - 1]?.x !==
-          marker.points[0].x + dx ||
-          marker.points[marker.points.length - 1]?.y !==
-            marker.points[0].y + dy);
+        marker.points.length === 3 &&
+        (marker.points[2]!.x !== marker.points[0]!.x + dx ||
+          marker.points[2]!.y !== marker.points[0]!.y + dy);
       if (isMovedFromLastPoint) {
         const updatedMarker: PolygonMarkerState = {
           ...marker,
-          points: marker.points[0]
-            ? [
-                ...marker.points,
-                { x: marker.points[0].x + dx, y: marker.points[0].y + dy },
-              ]
-            : [],
+          points: [
+            { x: marker.points[0]!.x, y: marker.points[0]!.y },
+            { x: marker.points[0]!.x, y: marker.points[0]!.y + dy },
+            { x: marker.points[0]!.x + dx, y: marker.points[0]!.y + dy },
+          ],
         };
         if (onMarkerChange) {
           onMarkerChange(updatedMarker);
@@ -267,7 +267,7 @@ const PolygonMarkerEditor: React.FC<PolygonMarkerEditorProps> = ({
         ...marker,
       };
       if (onMarkerCreate) {
-        onMarkerCreate(sanitizedMarker, true);
+        onMarkerCreate(sanitizedMarker);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -311,7 +311,7 @@ const PolygonMarkerEditor: React.FC<PolygonMarkerEditorProps> = ({
                   y1={point.y}
                   x2={point2.x}
                   y2={point2.y}
-                  stroke="black"
+                  stroke="transparent"
                   strokeWidth={10 / zoomFactor}
                   onLongPress={(ev) => handleLineLongPress(ev, index)}
                 />
