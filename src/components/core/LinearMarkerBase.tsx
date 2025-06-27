@@ -15,6 +15,8 @@ const LinearMarkerBase: React.FC<LinearMarkerBaseProps> = ({
   children,
   zoomFactor = 1,
   scaleStroke = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onLayout,
   ...props
 }: LinearMarkerBaseProps) => {
   return (

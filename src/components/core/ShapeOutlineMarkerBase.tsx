@@ -18,6 +18,8 @@ const ShapeOutlineMarkerBase: React.FC<ShapeOutlineMarkerBaseProps> = ({
   children,
   zoomFactor = 1,
   scaleStroke = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onLayout,
   ...props
 }: ShapeOutlineMarkerBaseProps) => {
   return (

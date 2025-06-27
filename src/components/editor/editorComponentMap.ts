@@ -2,6 +2,7 @@ import FreehandMarkerEditor from './FreehandMarkerEditor';
 import LinearMarkerBaseEditor from './LinearMarkerBaseEditor';
 import PolygonMarkerEditor from './PolygonMarkerEditor';
 import RectangularBoxMarkerBaseEditor from './RectangularBoxMarkerBaseEditor';
+import TextMarkerEditor from './TextMarkerEditor';
 
 export const editorComponentMap: Record<string, React.ComponentType<any>> = {
   FrameMarker: RectangularBoxMarkerBaseEditor,
@@ -10,5 +11,6 @@ export const editorComponentMap: Record<string, React.ComponentType<any>> = {
   FreehandMarker: FreehandMarkerEditor,
   CustomImageMarker: RectangularBoxMarkerBaseEditor,
   PolygonMarker: PolygonMarkerEditor,
+  TextMarker: TextMarkerEditor,
   // Add more mappings here as you add more marker types
 };

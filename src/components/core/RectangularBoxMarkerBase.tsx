@@ -1,7 +1,7 @@
 import type React from 'react';
 import type { RectangularBoxMarkerBaseState } from '../../core/RectangularBoxMarkerBaseState';
 import MarkerBase, { type MarkerBaseProps } from './MarkerBase';
-import { G, Rect } from 'react-native-svg';
+import { G } from 'react-native-svg';
 
 interface RectangularBoxMarkerBaseProps
   extends MarkerBaseProps,

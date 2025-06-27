@@ -13,6 +13,8 @@ const FreehandMarker: React.FC<FreehandMarkerProps> = ({
   children,
   zoomFactor = 1,
   scaleStroke = true,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onLayout,
   ...props
 }: FreehandMarkerProps) => {
   return (

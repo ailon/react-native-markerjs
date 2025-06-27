@@ -4,13 +4,10 @@ import RectangularBoxMarkerBase, {
   type RectangularBoxMarkerBaseProps,
 } from './RectangularBoxMarkerBase';
 import type { TextMarkerState } from '../../core/TextMarkerState';
-import { type LayoutRectangle } from 'react-native';
 
 interface TextMarkerProps
   extends RectangularBoxMarkerBaseProps,
-    TextMarkerState {
-  onLayout?: (layout: LayoutRectangle) => void;
-}
+    TextMarkerState {}
 
 const TextMarker: React.FC<TextMarkerProps> = ({
   strokeColor,

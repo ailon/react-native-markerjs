@@ -1,17 +1,5 @@
-import type { ShapeOutlineMarkerBaseState } from '../core/ShapeOutlineMarkerBaseState';
-import { MarkerBaseFactory } from './MarkerBaseFactory';
+import { RectangularBoxMarkerBaseFactory } from './RectangularBoxMarkerBaseFactory';
 
-export class ShapeOutlineMarkerBaseFactory extends MarkerBaseFactory {
+export class ShapeOutlineMarkerBaseFactory extends RectangularBoxMarkerBaseFactory {
   public static typeName = 'ShapeOutlineMarkerBase';
-  public static override createMarker(): ShapeOutlineMarkerBaseState {
-    return {
-      ...super.createMarker(),
-      left: 0,
-      top: 0,
-      width: 0,
-      height: 0,
-      strokeDasharray: '',
-      rotationAngle: 0,
-    };
-  }
 }
