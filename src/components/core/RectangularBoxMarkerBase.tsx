@@ -1,7 +1,7 @@
 import type React from 'react';
 import type { RectangularBoxMarkerBaseState } from '../../core/RectangularBoxMarkerBaseState';
 import MarkerBase, { type MarkerBaseProps } from './MarkerBase';
-import { G } from 'react-native-svg';
+import { G, Rect } from 'react-native-svg';
 
 interface RectangularBoxMarkerBaseProps
   extends MarkerBaseProps,
@@ -16,7 +16,10 @@ const RectangularBoxMarkerBase: React.FC<RectangularBoxMarkerBaseProps> = (
       <G
         transform={`rotate(${rotationAngle ?? 0}, ${left + width / 2}, ${top + height / 2})`}
       >
-        <G transform={`translate(${left}, ${top})`}>{props.children}</G>
+        <G transform={`translate(${left}, ${top})`}>
+          {props.children}
+          {/* <Rect width={width} height={height} fill="rgba(0, 0, 255, 0.5)" /> */}
+        </G>
       </G>
     </MarkerBase>
   );

@@ -4,6 +4,7 @@ import LineMarker from './LineMarker';
 import FreehandMarker from './FreehandMarker';
 import CustomImageMarker from './CustomImageMarker';
 import PolygonMarker from './PolygonMarker';
+import TextMarker from './TextMarker';
 
 export const markerComponentMap: Record<string, React.ComponentType<any>> = {
   FrameMarker: FrameMarker,
@@ -12,5 +13,6 @@ export const markerComponentMap: Record<string, React.ComponentType<any>> = {
   FreehandMarker: FreehandMarker,
   CustomImageMarker: CustomImageMarker,
   PolygonMarker: PolygonMarker,
+  TextMarker: TextMarker,
   // Add more mappings here as you add more marker types
 };
