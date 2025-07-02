@@ -10,6 +10,7 @@ import {
   useState,
   type RefObject,
 } from 'react';
+import Logo from './core/Logo';
 
 export interface MarkerViewHandle {
   visualRef: RefObject<View | null>;
@@ -86,6 +87,7 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
             })}
           </Svg>
         </View>
+        <Logo />
       </View>
     );
   }

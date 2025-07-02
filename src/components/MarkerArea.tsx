@@ -26,6 +26,7 @@ import {
   createNewAnnotationState,
   updateMarkerInAnnotation,
 } from '../utils/stateHelpers';
+import Logo from './core/Logo';
 
 export interface MarkerAreaHandle {
   createMarker: (markerType: string, params?: Partial<MarkerBaseState>) => void;
@@ -269,77 +270,80 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
           </Svg>
         )}
         {annotation && (
-          <Svg
-            width={annotation.width * zoomFactor}
-            height={annotation.height * zoomFactor}
-            viewBox={`0 0 ${annotation.width} ${annotation.height}`}
-            onStartShouldSetResponder={() => mode === 'create'}
-            onResponderGrant={handleResponderGrant}
-            onResponderMove={handleResponderMove}
-            onResponderRelease={handleResponderRelease}
-            onResponderTerminate={handleResponderRelease}
-          >
-            <Image
-              href={targetSrc}
-              width={annotation.width}
-              height={annotation.height}
-              onLoad={handleAnnotatedImageLoad}
-            />
-            {annotation.markers.map((marker, index) => {
-              // find the editor component for the marker
-              const EditorComponent = editorComponentMap[marker.typeName];
-              if (!EditorComponent) {
-                console.warn(
-                  `No editor component found for type: ${marker.typeName}`
-                );
-                return null;
-              }
+          <>
+            <Svg
+              width={annotation.width * zoomFactor}
+              height={annotation.height * zoomFactor}
+              viewBox={`0 0 ${annotation.width} ${annotation.height}`}
+              onStartShouldSetResponder={() => mode === 'create'}
+              onResponderGrant={handleResponderGrant}
+              onResponderMove={handleResponderMove}
+              onResponderRelease={handleResponderRelease}
+              onResponderTerminate={handleResponderRelease}
+            >
+              <Image
+                href={targetSrc}
+                width={annotation.width}
+                height={annotation.height}
+                onLoad={handleAnnotatedImageLoad}
+              />
+              {annotation.markers.map((marker, index) => {
+                // find the editor component for the marker
+                const EditorComponent = editorComponentMap[marker.typeName];
+                if (!EditorComponent) {
+                  console.warn(
+                    `No editor component found for type: ${marker.typeName}`
+                  );
+                  return null;
+                }
 
-              return (
-                <EditorComponent
-                  key={marker[markerIdSymbol] ?? index}
-                  marker={marker}
+                return (
+                  <EditorComponent
+                    key={marker[markerIdSymbol] ?? index}
+                    marker={marker}
+                    zoomFactor={zoomFactor}
+                    scaleStroke={scaleStroke}
+                    disableInteraction={mode === 'create'}
+                    selected={
+                      selectedMarker !== null &&
+                      selectedMarker[markerIdSymbol] === marker[markerIdSymbol]
+                    }
+                    onSelect={(m: MarkerBaseState) => {
+                      if (
+                        selectedMarker?.[markerIdSymbol] !== m[markerIdSymbol]
+                      ) {
+                        setSelectedMarker(m ?? null);
+                        onSelectedMarkerChange?.(m ?? null);
+                      }
+                    }}
+                    onMarkerChange={(m: MarkerBaseState) => {
+                      if (onAnnotationChange) {
+                        onAnnotationChange(
+                          updateMarkerInAnnotation(annotation, m)
+                        );
+                      }
+                    }}
+                  />
+                );
+              })}
+
+              {creatingMarker && CreatingEditorComponent && (
+                <CreatingEditorComponent
+                  marker={creatingMarker}
+                  mode={creatingEditorMode}
                   zoomFactor={zoomFactor}
                   scaleStroke={scaleStroke}
-                  disableInteraction={mode === 'create'}
-                  selected={
-                    selectedMarker !== null &&
-                    selectedMarker[markerIdSymbol] === marker[markerIdSymbol]
-                  }
-                  onSelect={(m: MarkerBaseState) => {
-                    if (
-                      selectedMarker?.[markerIdSymbol] !== m[markerIdSymbol]
-                    ) {
-                      setSelectedMarker(m ?? null);
-                      onSelectedMarkerChange?.(m ?? null);
-                    }
-                  }}
+                  gestureStartLocation={gestureStartLocation ?? undefined}
+                  gestureMoveLocation={gestureMoveLocation ?? undefined}
                   onMarkerChange={(m: MarkerBaseState) => {
-                    if (onAnnotationChange) {
-                      onAnnotationChange(
-                        updateMarkerInAnnotation(annotation, m)
-                      );
-                    }
+                    setCreatingMarker(m);
                   }}
+                  onMarkerCreate={handleMarkerCreate}
                 />
-              );
-            })}
-
-            {creatingMarker && CreatingEditorComponent && (
-              <CreatingEditorComponent
-                marker={creatingMarker}
-                mode={creatingEditorMode}
-                zoomFactor={zoomFactor}
-                scaleStroke={scaleStroke}
-                gestureStartLocation={gestureStartLocation ?? undefined}
-                gestureMoveLocation={gestureMoveLocation ?? undefined}
-                onMarkerChange={(m: MarkerBaseState) => {
-                  setCreatingMarker(m);
-                }}
-                onMarkerCreate={handleMarkerCreate}
-              />
-            )}
-          </Svg>
+              )}
+            </Svg>
+            <Logo />
+          </>
         )}
       </View>
     );
