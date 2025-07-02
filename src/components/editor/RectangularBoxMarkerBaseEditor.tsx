@@ -106,11 +106,16 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   };
 
   const handleResponderMove = (ev: GestureResponderEvent) => {
-    cancelLongPress();
-
     // Get absolute movement in screen coordinates
     const dx = ev.nativeEvent.pageX / zoomFactor - manipulationStartPosition.x;
     const dy = ev.nativeEvent.pageY / zoomFactor - manipulationStartPosition.y;
+
+    // ignore movement if it is too small
+    if (Math.abs(dx) < 3 && Math.abs(dy) < 3) {
+      return;
+    }
+
+    cancelLongPress();
 
     // Convert rotation to radians
     const angle = ((marker.rotationAngle || 0) * Math.PI) / 180;

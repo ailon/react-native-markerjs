@@ -111,11 +111,16 @@ const PolygonMarkerEditor: React.FC<PolygonMarkerEditorProps> = ({
     ev: GestureResponderEvent,
     gripIndex: number
   ) => {
-    cancelLongPress();
-
     // Get absolute movement in screen coordinates
     const dx = ev.nativeEvent.pageX / zoomFactor - manipulationStartPosition.x;
     const dy = ev.nativeEvent.pageY / zoomFactor - manipulationStartPosition.y;
+
+    // ignore movement if it is too small
+    if (Math.abs(dx) < 3 && Math.abs(dy) < 3) {
+      return;
+    }
+
+    cancelLongPress();
 
     if (onMarkerChange) {
       const updatedMarker: PolygonMarkerState = {
