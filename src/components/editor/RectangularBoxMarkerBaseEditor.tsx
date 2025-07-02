@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { G, Line, Rect } from 'react-native-svg';
 import type { RectangularBoxMarkerBaseState } from '../../core/RectangularBoxMarkerBaseState';
 import Grip from './Grip';
@@ -12,6 +12,7 @@ import { markerComponentMap } from '../core/markerComponentMap';
 interface RectangularBoxMarkerBaseEditorProps extends MarkerBaseEditorProps {
   marker: RectangularBoxMarkerBaseState;
   isResizable?: boolean;
+  onLongPress?: () => void;
 }
 
 type ManipulationMode = 'move' | 'resize' | 'rotate';
@@ -35,6 +36,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   onSelect,
   onMarkerChange,
   onMarkerCreate,
+  onLongPress,
 }) => {
   // what type of manipulation is currently active
   const [manipulationMode, setManipulationMode] =
@@ -68,6 +70,17 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     y: 0,
   });
 
+  const LONG_PRESS_DELAY = 500;
+  const longPressTimeout = useRef<number | null>(null);
+  const longPressTriggered = useRef(false);
+
+  const cancelLongPress = () => {
+    if (longPressTimeout.current) {
+      clearTimeout(longPressTimeout.current);
+      longPressTimeout.current = null;
+    }
+  };
+
   const startManipulation = (location: GestureLocation) => {
     setManipulationStartPosition({
       x: location.pageX / zoomFactor,
@@ -83,10 +96,18 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       locationY: ev.nativeEvent.locationY,
     });
 
+    longPressTriggered.current = false;
+    longPressTimeout.current = setTimeout(() => {
+      longPressTriggered.current = true;
+      onLongPress?.();
+    }, LONG_PRESS_DELAY);
+
     onSelect?.(marker);
   };
 
   const handleResponderMove = (ev: GestureResponderEvent) => {
+    cancelLongPress();
+
     // Get absolute movement in screen coordinates
     const dx = ev.nativeEvent.pageX / zoomFactor - manipulationStartPosition.x;
     const dy = ev.nativeEvent.pageY / zoomFactor - manipulationStartPosition.y;
@@ -152,6 +173,8 @@ const RectangularBoxMarkerBaseEditor: React.FC<
     }
   };
   const handleResponderRelease = () => {
+    cancelLongPress();
+
     setManipulationMode('move');
 
     const updatedMarker: RectangularBoxMarkerBaseState = {
