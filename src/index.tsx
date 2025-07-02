@@ -3,6 +3,8 @@ import MarkerView, { type MarkerViewHandle } from './components/MarkerView';
 
 export { MarkerArea, type MarkerAreaHandle, MarkerView, type MarkerViewHandle };
 
+export { Activator } from './core/Activator';
+
 export type { AnnotationState } from './core/AnnotationState';
 export type { MarkerBaseState } from './core/MarkerBaseState';
 export type { RectangularBoxMarkerBaseState } from './core/RectangularBoxMarkerBaseState';

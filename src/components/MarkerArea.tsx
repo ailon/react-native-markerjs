@@ -27,6 +27,7 @@ import {
   updateMarkerInAnnotation,
 } from '../utils/stateHelpers';
 import Logo from './core/Logo';
+import { Activator } from '../core/Activator';
 
 export interface MarkerAreaHandle {
   createMarker: (markerType: string, params?: Partial<MarkerBaseState>) => void;
@@ -342,7 +343,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
                 />
               )}
             </Svg>
-            <Logo />
+            {!Activator.isLicensed('MJSRN') && <Logo />}
           </>
         )}
       </View>

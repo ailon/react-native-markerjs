@@ -11,6 +11,7 @@ import {
   type RefObject,
 } from 'react';
 import Logo from './core/Logo';
+import { Activator } from '../core/Activator';
 
 export interface MarkerViewHandle {
   visualRef: RefObject<View | null>;
@@ -87,7 +88,7 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
             })}
           </Svg>
         </View>
-        <Logo />
+        {!Activator.isLicensed('MJSRN') && <Logo />}
       </View>
     );
   }
