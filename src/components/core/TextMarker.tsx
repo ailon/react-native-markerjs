@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Text, TSpan } from 'react-native-svg';
+import { Rect, Text, TSpan } from 'react-native-svg';
 import RectangularBoxMarkerBase, {
   type RectangularBoxMarkerBaseProps,
 } from './RectangularBoxMarkerBase';
@@ -30,6 +30,15 @@ const TextMarker: React.FC<TextMarkerProps> = ({
 
   return (
     <RectangularBoxMarkerBase {...props}>
+      {/* Transparent rectangle for interaction */}
+      <Rect
+        x={0}
+        y={0}
+        width={props.width}
+        height={props.height}
+        fill="transparent"
+        stroke="transparent"
+      />
       <Text textAnchor="middle">
         {lines.map((line, lineno) => (
           <TSpan
