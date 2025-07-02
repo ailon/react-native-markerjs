@@ -20,29 +20,25 @@ const TextMarker: React.FC<TextMarkerProps> = ({
   fontFamily,
   fontSize,
   color,
-  onLayout,
   ...props
 }: TextMarkerProps) => {
-  const LINE_SIZE = '1em';
-
   const lines = text.split(/\r\n|[\n\v\f\r\x85\u2028\u2029]/);
+
+  const LINE_SPACING = 0.1;
+  const lineHeight = (props.height - (props.padding ?? 0) * 2) / lines.length;
+  const fontSizePx = lineHeight - lineHeight * LINE_SPACING;
 
   return (
     <RectangularBoxMarkerBase {...props}>
-      <Text
-        textAnchor="middle"
-        onLayout={(ev) => {
-          onLayout?.(ev.nativeEvent.layout);
-        }}
-      >
+      <Text textAnchor="middle">
         {lines.map((line, lineno) => (
           <TSpan
             key={lineno}
             fill={color}
             fontFamily={fontFamily}
-            fontSize={`${fontSize.value}${fontSize.units}`}
+            fontSize={`${fontSizePx}px`}
             x={props.width / 2}
-            dy={LINE_SIZE}
+            dy={lineHeight}
           >
             {line}
           </TSpan>

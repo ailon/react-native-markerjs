@@ -5,14 +5,13 @@ import Grip from './Grip';
 import MarkerBaseEditor, {
   type MarkerBaseEditorProps,
 } from './MarkerBaseEditor';
-import { type GestureResponderEvent, type LayoutRectangle } from 'react-native';
+import { type GestureResponderEvent } from 'react-native';
 import type { GestureLocation } from '../../editor/GestureLocation';
 import { markerComponentMap } from '../core/markerComponentMap';
 
 interface RectangularBoxMarkerBaseEditorProps extends MarkerBaseEditorProps {
   marker: RectangularBoxMarkerBaseState;
   isResizable?: boolean;
-  onMarkerLayout?: (layout: LayoutRectangle) => void;
 }
 
 type ManipulationMode = 'move' | 'resize' | 'rotate';
@@ -36,7 +35,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   onSelect,
   onMarkerChange,
   onMarkerCreate,
-  onMarkerLayout,
 }) => {
   // what type of manipulation is currently active
   const [manipulationMode, setManipulationMode] =
@@ -275,7 +273,6 @@ const RectangularBoxMarkerBaseEditor: React.FC<
       <MarkerComponent
         zoomFactor={zoomFactor}
         scaleStroke={scaleStroke}
-        onLayout={onMarkerLayout}
         {...marker}
       >
         {selected && !disableInteraction && (

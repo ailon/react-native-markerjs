@@ -14,8 +14,6 @@ const PolygonMarker: React.FC<PolygonMarkerProps> = ({
   strokeDasharray,
   scaleStroke = false,
   zoomFactor = 1,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onLayout,
   ...props
 }: PolygonMarkerProps) => {
   return (
