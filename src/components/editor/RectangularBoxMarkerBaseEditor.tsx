@@ -251,7 +251,10 @@ const RectangularBoxMarkerBaseEditor: React.FC<
         gestureMoveLocation.pageY / zoomFactor - manipulationStartPosition.y,
         0
       );
-      if (marker.width !== dx || marker.height !== dy) {
+      if (
+        (marker.width !== dx || marker.height !== dy) &&
+        (Math.abs(marker.width - dx) > 3 || Math.abs(marker.height - dy) > 3) // throttle small changes
+      ) {
         const updatedMarker: RectangularBoxMarkerBaseState = {
           ...marker,
           width: dx,
