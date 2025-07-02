@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  View,
 } from 'react-native';
 import type { TextMarkerState } from '../../core/TextMarkerState';
 import type { MarkerBaseEditorProps } from './MarkerBaseEditor';
@@ -54,7 +55,6 @@ const TextMarkerEditor: React.FC<TextMarkerEditorProps> = ({
         onMarkerCreate={onMarkerCreate}
         onLongPress={() => {
           setEditorVisible(true);
-          console.log('Long press on TextMarkerEditor');
         }}
       />
       <Modal
@@ -62,12 +62,16 @@ const TextMarkerEditor: React.FC<TextMarkerEditorProps> = ({
         onRequestClose={() => setEditorVisible(false)}
       >
         <SafeAreaView style={styles.textEditor}>
-          <TextInput
-            value={marker.text}
-            multiline={true}
-            onChangeText={handleTextChange}
-          />
-          <Button title="Done" onPress={() => setEditorVisible(false)} />
+          <View style={styles.toolbar}>
+            <Button title="Done" onPress={() => setEditorVisible(false)} />
+          </View>
+          <View style={styles.textArea}>
+            <TextInput
+              value={marker.text}
+              multiline={true}
+              onChangeText={handleTextChange}
+            />
+          </View>
         </SafeAreaView>
       </Modal>
     </>
@@ -79,6 +83,17 @@ export default TextMarkerEditor;
 const styles = StyleSheet.create({
   textEditor: {
     flex: 1,
+    flexDirection: 'column',
+  },
+  toolbar: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    padding: 10,
+  },
+  textArea: {
+    flexGrow: 1,
+    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
