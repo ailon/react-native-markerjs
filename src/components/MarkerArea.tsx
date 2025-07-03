@@ -89,6 +89,13 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     const [zoomGestureStartZoomFactor, setZoomGestureStartZoomFactor] =
       useState<number | null>(null);
 
+    const [gestureStartOffset, setGestureStartOffset] = useState<{
+      x: number;
+      y: number;
+    }>({ x: 0, y: 0 });
+    const [offsetX, setOffsetX] = useState<number>(0);
+    const [offsetY, setOffsetY] = useState<number>(0);
+
     const [annotatedImageSize, setAnnotatedImageSize] = useState<{
       width: number;
       height: number;
@@ -189,15 +196,22 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
 
     // Handle gestures on the marker area
     const handleStartShouldSetResponder = (ev: GestureResponderEvent) => {
-      console.log(
-        'handleStartShouldSetResponder',
-        ev.nativeEvent.touches.length
-      );
       return mode === 'create' || ev.nativeEvent.touches.length === 2;
     };
 
     const handleResponderGrant = (ev: GestureResponderEvent) => {
-      console.log('handleResponderGrant', ev.nativeEvent);
+      setGestureStartLocation({
+        pageX: ev.nativeEvent.pageX,
+        pageY: ev.nativeEvent.pageY,
+        locationX: ev.nativeEvent.locationX,
+        locationY: ev.nativeEvent.locationY,
+      });
+      setGestureStartOffset({
+        x: offsetX,
+        y: offsetY,
+      });
+
+      console.log('handleResponderGrant', ev.nativeEvent.touches.length);
       if (mode === 'select' && ev.nativeEvent.touches.length > 1) {
         const [touch1, touch2] = ev.nativeEvent.touches;
         if (!touch1 || !touch2) {
@@ -225,13 +239,6 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
         // console.log('Creating marker of type:', markerTypeToCreate);
 
         setCreatingEditorMode('create');
-
-        setGestureStartLocation({
-          pageX: ev.nativeEvent.pageX,
-          pageY: ev.nativeEvent.pageY,
-          locationX: ev.nativeEvent.locationX,
-          locationY: ev.nativeEvent.locationY,
-        });
 
         const markerFactory = markerFactoryMap[markerTypeToCreate];
         if (markerFactory) {
@@ -277,15 +284,25 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
         // Optionally, clamp the zoom factor to reasonable bounds
         zoomFactorChange = Math.max(0.2, Math.min(zoomFactorChange, 5));
 
-        setManualZoomFactor(zoomGestureStartZoomFactor * zoomFactorChange);
-      } else {
-        setGestureMoveLocation({
-          pageX: ev.nativeEvent.pageX,
-          pageY: ev.nativeEvent.pageY,
-          locationX: ev.nativeEvent.locationX,
-          locationY: ev.nativeEvent.locationY,
-        });
+        const distanceX =
+          ev.nativeEvent.pageX - (gestureStartLocation?.pageX ?? 0);
+        const distanceY =
+          ev.nativeEvent.pageY - (gestureStartLocation?.pageY ?? 0);
+
+        if (Math.abs(distanceX) > 3 || Math.abs(distanceY) > 3) {
+          // Only apply zoom and offset if the gesture has moved significantly
+          setManualZoomFactor(zoomGestureStartZoomFactor * zoomFactorChange);
+
+          setOffsetX((gestureStartOffset.x + distanceX) * zoomFactorChange);
+          setOffsetY((gestureStartOffset.y + distanceY) * zoomFactorChange);
+        }
       }
+      setGestureMoveLocation({
+        pageX: ev.nativeEvent.pageX,
+        pageY: ev.nativeEvent.pageY,
+        locationX: ev.nativeEvent.locationX,
+        locationY: ev.nativeEvent.locationY,
+      });
     };
 
     const handleResponderRelease = (_ev: GestureResponderEvent) => {
@@ -350,7 +367,10 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
 
     return (
       <View
-        style={{ ...styles.container, opacity: annotation ? 1 : 0 }}
+        style={{
+          ...styles.container,
+          opacity: annotation ? 1 : 0,
+        }}
         onLayout={handleAnnotationLayout}
       >
         {annotation === null && (
@@ -369,6 +389,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
               onResponderMove={handleResponderMove}
               onResponderRelease={handleResponderRelease}
               onResponderTerminate={handleResponderRelease}
+              style={{ marginLeft: offsetX, marginTop: offsetY }}
             >
               <Image
                 href={targetSrc}
