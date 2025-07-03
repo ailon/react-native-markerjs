@@ -83,6 +83,12 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     const [gestureMoveLocation, setGestureMoveLocation] =
       useState<GestureLocation | null>(null);
 
+    const [zoomGestureStartLocation, setZoomGestureStartLocation] = useState<
+      [GestureLocation, GestureLocation] | null
+    >(null);
+    const [zoomGestureStartZoomFactor, setZoomGestureStartZoomFactor] =
+      useState<number | null>(null);
+
     const [annotatedImageSize, setAnnotatedImageSize] = useState<{
       width: number;
       height: number;
@@ -92,7 +98,15 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       height: number;
     } | null>(null);
 
+    const [manualZoomFactor, setManualZoomFactor] = useState<number | null>(
+      null
+    );
+
     const zoomFactor = useMemo(() => {
+      if (manualZoomFactor !== null) {
+        return manualZoomFactor;
+      }
+
       if (annotatedImageSize && layoutSize) {
         // fit the annotated image to the layout size
 
@@ -111,7 +125,13 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
         }
       }
       return 1;
-    }, [annotatedImageSize, layoutSize, annotation?.width, annotation?.height]);
+    }, [
+      manualZoomFactor,
+      annotatedImageSize,
+      layoutSize,
+      annotation?.width,
+      annotation?.height,
+    ]);
 
     // initiates marker creation
     const createMarker = (
@@ -168,8 +188,40 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     }, [onAnnotationChange, annotation]);
 
     // Handle gestures on the marker area
+    const handleStartShouldSetResponder = (ev: GestureResponderEvent) => {
+      console.log(
+        'handleStartShouldSetResponder',
+        ev.nativeEvent.touches.length
+      );
+      return mode === 'create' || ev.nativeEvent.touches.length === 2;
+    };
+
     const handleResponderGrant = (ev: GestureResponderEvent) => {
-      if (mode === 'create' && markerTypeToCreate) {
+      console.log('handleResponderGrant', ev.nativeEvent);
+      if (mode === 'select' && ev.nativeEvent.touches.length > 1) {
+        const [touch1, touch2] = ev.nativeEvent.touches;
+        if (!touch1 || !touch2) {
+          console.warn('Not enough touches for zoom gesture');
+          return;
+        }
+        setZoomGestureStartLocation([
+          {
+            touchId: touch1.identifier,
+            pageX: touch1.pageX,
+            pageY: touch1.pageY,
+            locationX: touch1.locationX,
+            locationY: touch1.locationY,
+          },
+          {
+            touchId: touch2.identifier,
+            pageX: touch2.pageX,
+            pageY: touch2.pageY,
+            locationX: touch2.locationX,
+            locationY: touch2.locationY,
+          },
+        ]);
+        setZoomGestureStartZoomFactor(zoomFactor);
+      } else if (mode === 'create' && markerTypeToCreate) {
         // console.log('Creating marker of type:', markerTypeToCreate);
 
         setCreatingEditorMode('create');
@@ -193,15 +245,51 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     };
 
     const handleResponderMove = (ev: GestureResponderEvent) => {
-      setGestureMoveLocation({
-        pageX: ev.nativeEvent.pageX,
-        pageY: ev.nativeEvent.pageY,
-        locationX: ev.nativeEvent.locationX,
-        locationY: ev.nativeEvent.locationY,
-      });
+      if (mode === 'select' && ev.nativeEvent.touches.length > 1) {
+        const [touch1, touch2] = ev.nativeEvent.touches;
+        const [startTouch1, startTouch2] = zoomGestureStartLocation ?? [];
+
+        if (
+          !touch1 ||
+          !touch2 ||
+          !startTouch1 ||
+          !startTouch2 ||
+          !zoomGestureStartZoomFactor
+        ) {
+          console.warn('Not enough data for zoom gesture');
+          return;
+        }
+
+        const initialDistance = Math.sqrt(
+          Math.pow(startTouch1.pageX - startTouch2.pageX, 2) +
+            Math.pow(startTouch1.pageY - startTouch2.pageY, 2)
+        );
+        const currentDistance = Math.sqrt(
+          Math.pow(touch1.pageX - touch2.pageX, 2) +
+            Math.pow(touch1.pageY - touch2.pageY, 2)
+        );
+        // Prevent division by zero
+        if (initialDistance === 0) return;
+
+        // Calculate zoom factor change as the ratio of current to initial distance
+        let zoomFactorChange = currentDistance / initialDistance;
+
+        // Optionally, clamp the zoom factor to reasonable bounds
+        zoomFactorChange = Math.max(0.2, Math.min(zoomFactorChange, 5));
+
+        setManualZoomFactor(zoomGestureStartZoomFactor * zoomFactorChange);
+      } else {
+        setGestureMoveLocation({
+          pageX: ev.nativeEvent.pageX,
+          pageY: ev.nativeEvent.pageY,
+          locationX: ev.nativeEvent.locationX,
+          locationY: ev.nativeEvent.locationY,
+        });
+      }
     };
 
     const handleResponderRelease = (_ev: GestureResponderEvent) => {
+      console.log('handleResponderRelease', _ev.nativeEvent.touches.length);
       setCreatingEditorMode('finishCreation');
       setGestureStartLocation(null);
       setGestureMoveLocation(null);
@@ -276,7 +364,7 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
               width={annotation.width * zoomFactor}
               height={annotation.height * zoomFactor}
               viewBox={`0 0 ${annotation.width} ${annotation.height}`}
-              onStartShouldSetResponder={() => mode === 'create'}
+              onStartShouldSetResponder={handleStartShouldSetResponder}
               onResponderGrant={handleResponderGrant}
               onResponderMove={handleResponderMove}
               onResponderRelease={handleResponderRelease}
