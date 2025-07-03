@@ -5,10 +5,14 @@ import { G, Path } from 'react-native-svg';
 
 interface LinearMarkerBaseProps extends MarkerBaseProps, LinearMarkerBaseState {
   d: string;
+  startTerminatorD?: string;
+  endTerminatorD?: string;
 }
 
 const LinearMarkerBase: React.FC<LinearMarkerBaseProps> = ({
   d,
+  startTerminatorD,
+  endTerminatorD,
   strokeColor,
   strokeWidth,
   strokeDasharray,
@@ -39,6 +43,24 @@ const LinearMarkerBase: React.FC<LinearMarkerBaseProps> = ({
           strokeWidth={(strokeWidth ?? 1) / (scaleStroke ? zoomFactor : 1)}
           strokeDasharray={strokeDasharray}
         />
+        {startTerminatorD && (
+          <Path
+            d={startTerminatorD}
+            {...props}
+            fill="transparent"
+            stroke={strokeColor}
+            strokeWidth={(strokeWidth ?? 1) / (scaleStroke ? zoomFactor : 1)}
+          />
+        )}
+        {endTerminatorD && (
+          <Path
+            d={endTerminatorD}
+            {...props}
+            fill="transparent"
+            stroke={strokeColor}
+            strokeWidth={(strokeWidth ?? 1) / (scaleStroke ? zoomFactor : 1)}
+          />
+        )}
         {children}
       </G>
     </MarkerBase>

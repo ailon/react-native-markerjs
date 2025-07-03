@@ -81,6 +81,7 @@ const Editor = () => {
           onPress={() => handleMarkerCreate('EllipseFrameMarker')}
         />
         <Button title="⎼" onPress={() => handleMarkerCreate('LineMarker')} />
+        <Button title="→" onPress={() => handleMarkerCreate('ArrowMarker')} />
         <Button
           title="🖌️"
           onPress={() => handleMarkerCreate('FreehandMarker')}

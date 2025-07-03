@@ -13,6 +13,8 @@ export type { LinearMarkerBaseState } from './core/LinearMarkerBaseState';
 export type { FreehandMarkerState } from './core/FreehandMarkerState';
 export type { ImageMarkerBaseState } from './core/ImageMarkerBaseState';
 export type { PolygonMarkerState } from './core/PolygonMarkerState';
+export type { TextMarkerState } from './core/TextMarkerState';
+export type { ArrowMarkerState } from './core/ArrowMarkerState';
 
 export {
   AnnotationProvider,
