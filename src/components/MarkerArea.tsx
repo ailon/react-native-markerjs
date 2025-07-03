@@ -77,7 +77,6 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     const [creatingEditorMode, setCreatingEditorMode] =
       useState<EditorMode>('select');
 
-    // locations for gesture handling passed down to the editor component
     const [gestureStartLocation, setGestureStartLocation] =
       useState<GestureLocation | null>(null);
     const [gestureMoveLocation, setGestureMoveLocation] =

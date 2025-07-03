@@ -59,6 +59,7 @@ const RendererPage = () => {
               targetSrc={require('../../assets/sample-images/landscape_sm.jpg')}
               annotation={annotation}
               scaleStroke={false}
+              disableManualZoom={true} // Disable manual zoom for rendering
             />
           </View>
           <View style={styles.toolbar}>
