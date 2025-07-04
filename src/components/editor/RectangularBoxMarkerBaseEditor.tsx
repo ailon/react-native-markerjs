@@ -71,7 +71,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   });
 
   const LONG_PRESS_DELAY = 500;
-  const longPressTimeout = useRef<number | null>(null);
+  const longPressTimeout = useRef<number | NodeJS.Timeout | null>(null);
   const longPressTriggered = useRef(false);
 
   const cancelLongPress = () => {
