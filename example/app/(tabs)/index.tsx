@@ -76,6 +76,7 @@ const Editor = () => {
           onPress={() => markerAreaRef.current?.deleteSelectedMarker()}
         />
         <Button title="▭" onPress={() => handleMarkerCreate('FrameMarker')} />
+        <Button title="⬛️" onPress={() => handleMarkerCreate('CoverMarker')} />
         <Button
           title="⭕️"
           onPress={() => handleMarkerCreate('EllipseFrameMarker')}

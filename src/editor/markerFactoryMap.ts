@@ -7,6 +7,7 @@ import { CustomImageMarkerFactory } from './CustomImageMarkerFactory';
 import { PolygonMarkerFactory } from './PolygonMarkerFactory';
 import { TextMarkerFactory } from './TextMarkerFactory';
 import { ArrowMarkerFactory } from './ArrowMarkerFactory';
+import { CoverMarkerFactory } from './CoverMarkerFactory';
 
 export const markerFactoryMap: Record<string, typeof MarkerBaseFactory> = {
   FrameMarker: FrameMarkerFactory,
@@ -17,5 +18,6 @@ export const markerFactoryMap: Record<string, typeof MarkerBaseFactory> = {
   PolygonMarker: PolygonMarkerFactory,
   TextMarker: TextMarkerFactory,
   ArrowMarker: ArrowMarkerFactory,
+  CoverMarker: CoverMarkerFactory,
   // Add more mappings here as you add more marker types
 };
