@@ -210,7 +210,6 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
         y: offsetY,
       });
 
-      console.log('handleResponderGrant', ev.nativeEvent.touches.length);
       if (mode === 'select' && ev.nativeEvent.touches.length > 1) {
         const [touch1, touch2] = ev.nativeEvent.touches;
         if (!touch1 || !touch2) {
@@ -305,7 +304,6 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
     };
 
     const handleResponderRelease = (_ev: GestureResponderEvent) => {
-      console.log('handleResponderRelease', _ev.nativeEvent.touches.length);
       setCreatingEditorMode('finishCreation');
       setGestureStartLocation(null);
       setGestureMoveLocation(null);
