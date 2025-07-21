@@ -4,7 +4,7 @@
 
 **marker.js for React Native** is a library to enable image annotation in your React Native applications. Add **marker.js for React Native** to your app and enable users to annotate and mark up images. You can save, share or otherwise process the results.
 
-**marker.js for React Native** is based on the original [marker.js 3](https://markerjs.com) library, which is a mature and battle-tested image annotation library for the web. **marker.js for React Native** is a reimplementation of the original library, designed to work seamlessly in React Native environments. It is not, however, a 100% compatible in terms of API and features, so please refer to the documentation below for details.
+**marker.js for React Native** is based on the original [marker.js 3](https://markerjs.com) library, which is a mature and battle-tested image annotation library for the web. **marker.js for React Native** is a reimplementation of the original library, designed to work seamlessly in React Native environments. It is not, however, 100% compatible in terms of API and features, so please refer to the documentation below for details.
 
 ## Installation
 
