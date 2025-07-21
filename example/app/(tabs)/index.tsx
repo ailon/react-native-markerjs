@@ -78,6 +78,10 @@ const Editor = () => {
         <Button title="▭" onPress={() => handleMarkerCreate('FrameMarker')} />
         <Button title="⬛️" onPress={() => handleMarkerCreate('CoverMarker')} />
         <Button
+          title="🟨"
+          onPress={() => handleMarkerCreate('HighlightMarker')}
+        />
+        <Button
           title="⭕️"
           onPress={() => handleMarkerCreate('EllipseFrameMarker')}
         />
@@ -131,5 +135,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 10,
     backgroundColor: '#ccc',
+    flexWrap: 'wrap',
   },
 });

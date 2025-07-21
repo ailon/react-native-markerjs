@@ -15,5 +15,6 @@ export const editorComponentMap: Record<string, React.ComponentType<any>> = {
   ArrowMarker: LinearMarkerBaseEditor,
   CoverMarker: RectangularBoxMarkerBaseEditor,
   EllipseMarker: RectangularBoxMarkerBaseEditor,
+  HighlightMarker: RectangularBoxMarkerBaseEditor,
   // Add more mappings here as you add more marker types
 };
