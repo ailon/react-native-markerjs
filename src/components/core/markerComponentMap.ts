@@ -9,6 +9,7 @@ import ArrowMarker from './ArrowMarker';
 import CoverMarker from './CoverMarker';
 import EllipseMarker from './EllipseMarker';
 import HighlightMarker from './HighlightMarker';
+import HighlighterMarker from './HighlighterMarker';
 
 export const markerComponentMap: Record<string, React.ComponentType<any>> = {
   FrameMarker: FrameMarker,
@@ -22,5 +23,6 @@ export const markerComponentMap: Record<string, React.ComponentType<any>> = {
   CoverMarker: CoverMarker,
   EllipseMarker: EllipseMarker,
   HighlightMarker: HighlightMarker,
+  HighlighterMarker: HighlighterMarker,
   // Add more mappings here as you add more marker types
 };
