@@ -466,8 +466,5 @@ const styles = StyleSheet.create({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#61dafb',
   },
 });

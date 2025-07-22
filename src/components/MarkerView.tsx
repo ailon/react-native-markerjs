@@ -236,9 +236,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#da61fb',
     overflow: 'hidden',
   },
 });
