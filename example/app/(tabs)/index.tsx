@@ -128,6 +128,8 @@ const styles = StyleSheet.create({
   markerAreaContainer: {
     flex: 0.8,
     overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
     width: '100%',
   },
   topToolbar: {
