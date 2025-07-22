@@ -24,6 +24,7 @@ const TextMarkerEditor: React.FC<TextMarkerEditorProps> = ({
   zoomFactor = 1,
   scaleStroke = true,
   disableInteraction = false,
+  children,
   onSelect,
   onMarkerChange,
   onMarkerCreate,
@@ -42,6 +43,7 @@ const TextMarkerEditor: React.FC<TextMarkerEditorProps> = ({
     <>
       <RectangularBoxMarkerBaseEditor
         marker={marker}
+        children={children}
         mode={mode}
         selected={selected}
         gestureStartLocation={gestureStartLocation}

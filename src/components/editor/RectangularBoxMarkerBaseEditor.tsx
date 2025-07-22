@@ -33,6 +33,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
   scaleStroke = true,
   disableInteraction = false,
   isResizable = true,
+  children,
   onSelect,
   onMarkerChange,
   onMarkerCreate,
@@ -357,6 +358,7 @@ const RectangularBoxMarkerBaseEditor: React.FC<
                 onResponderTerminate={handleResponderRelease}
               />
             </G>
+            {children}
           </G>
         )}
       </MarkerComponent>

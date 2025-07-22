@@ -11,6 +11,7 @@ import EllipseMarker from './EllipseMarker';
 import HighlightMarker from './HighlightMarker';
 import HighlighterMarker from './HighlighterMarker';
 import MeasurementMarker from './MeasurementMarker';
+import CalloutMarker from './CalloutMarker';
 
 export const markerComponentMap: Record<string, React.ComponentType<any>> = {
   FrameMarker: FrameMarker,
@@ -26,5 +27,6 @@ export const markerComponentMap: Record<string, React.ComponentType<any>> = {
   HighlightMarker: HighlightMarker,
   HighlighterMarker: HighlighterMarker,
   MeasurementMarker: MeasurementMarker,
+  CalloutMarker: CalloutMarker,
   // Add more mappings here as you add more marker types
 };

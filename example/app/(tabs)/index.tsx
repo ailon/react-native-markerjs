@@ -103,6 +103,10 @@ const Editor = () => {
         <Button title="△" onPress={() => handleMarkerCreate('PolygonMarker')} />
         <Button title="T" onPress={() => handleMarkerCreate('TextMarker')} />
         <Button
+          title="🗨️"
+          onPress={() => handleMarkerCreate('CalloutMarker')}
+        />
+        <Button
           title="🙂"
           onPress={() =>
             handleMarkerCreate('CustomImageMarker', {

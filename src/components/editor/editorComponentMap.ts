@@ -1,3 +1,4 @@
+import CalloutMarkerEditor from './CalloutMarkerEditor';
 import FreehandMarkerEditor from './FreehandMarkerEditor';
 import LinearMarkerBaseEditor from './LinearMarkerBaseEditor';
 import PolygonMarkerEditor from './PolygonMarkerEditor';
@@ -18,5 +19,6 @@ export const editorComponentMap: Record<string, React.ComponentType<any>> = {
   HighlightMarker: RectangularBoxMarkerBaseEditor,
   HighlighterMarker: FreehandMarkerEditor,
   MeasurementMarker: LinearMarkerBaseEditor,
+  CalloutMarker: CalloutMarkerEditor,
   // Add more mappings here as you add more marker types
 };

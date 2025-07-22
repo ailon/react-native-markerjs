@@ -12,6 +12,7 @@ import { EllipseMarkerFactory } from './EllipseMarkerFactory';
 import { HighlightMarkerFactory } from './HighlightMarkerFactory';
 import { HighlighterMarkerFactory } from './HighlighterMarkerFactory';
 import { MeasurementMarkerFactory } from './MeasurementMarkerFactory';
+import { CalloutMarkerFactory } from './CalloutMarkerFactory';
 
 export const markerFactoryMap: Record<string, typeof MarkerBaseFactory> = {
   FrameMarker: FrameMarkerFactory,
@@ -27,5 +28,6 @@ export const markerFactoryMap: Record<string, typeof MarkerBaseFactory> = {
   HighlightMarker: HighlightMarkerFactory,
   HighlighterMarker: HighlighterMarkerFactory,
   MeasurementMarker: MeasurementMarkerFactory,
+  CalloutMarker: CalloutMarkerFactory,
   // Add more mappings here as you add more marker types
 };

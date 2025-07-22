@@ -39,6 +39,8 @@ const TextMarker: React.FC<TextMarkerProps> = ({
         fill="transparent"
         stroke="transparent"
       />
+      {children}
+
       <Text textAnchor="middle">
         {lines.map((line, lineno) => (
           <TSpan
@@ -53,7 +55,6 @@ const TextMarker: React.FC<TextMarkerProps> = ({
           </TSpan>
         ))}
       </Text>
-      {children}
     </RectangularBoxMarkerBase>
   );
 };
