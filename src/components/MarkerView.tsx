@@ -2,7 +2,9 @@ import {
   StyleSheet,
   View,
   type GestureResponderEvent,
+  type ImageLoadEventData,
   type LayoutChangeEvent,
+  type NativeSyntheticEvent,
 } from 'react-native';
 import type { AnnotationState } from '../core/AnnotationState';
 import Svg, { Image } from 'react-native-svg';
@@ -25,7 +27,7 @@ export interface MarkerViewHandle {
 
 interface MarkerViewProps {
   targetSrc: string;
-  annotation: AnnotationState;
+  annotation: AnnotationState | null;
   scaleStroke?: boolean;
   disableManualZoom?: boolean;
 }
@@ -35,6 +37,10 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
     { targetSrc, annotation, scaleStroke = true, disableManualZoom = false },
     ref
   ) => {
+    const [annotatedImageSize, setAnnotatedImageSize] = useState<{
+      width: number;
+      height: number;
+    } | null>(null);
     const [layoutSize, setLayoutSize] = useState<{
       width: number;
       height: number;
@@ -71,12 +77,12 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
         return manualZoomFactor;
       }
 
-      if (layoutSize) {
+      if (annotatedImageSize && layoutSize) {
         // fit the annotated image to the layout size
 
         // Calculate scale to fit the image within the layout while preserving aspect ratio
-        const imgWidth = annotation.width;
-        const imgHeight = annotation.height;
+        const imgWidth = annotation?.width ?? annotatedImageSize.width;
+        const imgHeight = annotation?.height ?? annotatedImageSize.height;
         const layoutAspect = layoutSize.width / layoutSize.height;
         const imgAspect = imgWidth / imgHeight;
 
@@ -89,11 +95,36 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
         }
       }
       return 1;
-    }, [manualZoomFactor, layoutSize, annotation.width, annotation.height]);
+    }, [
+      manualZoomFactor,
+      annotatedImageSize,
+      layoutSize,
+      annotation?.width,
+      annotation?.height,
+    ]);
 
     const handleAnnotationLayout = (ev: LayoutChangeEvent) => {
       const { width, height } = ev.nativeEvent.layout;
       setLayoutSize({ width, height });
+    };
+
+    const handleInitialImageLoad = (
+      ev: NativeSyntheticEvent<ImageLoadEventData>
+    ) => {
+      if (annotation === null) {
+        const { width, height } = ev.nativeEvent.source;
+        setAnnotatedImageSize({ width, height });
+      }
+    };
+
+    const handleAnnotatedImageLoad = (
+      ev: NativeSyntheticEvent<ImageLoadEventData>
+    ) => {
+      if (annotation) {
+        const { width, height } = ev.nativeEvent.source;
+        // Update the annotated image size
+        setAnnotatedImageSize({ width, height });
+      }
     };
 
     const handleStartShouldSetResponder = (ev: GestureResponderEvent) => {
@@ -190,38 +221,50 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
       setGestureStartLocation(null);
     };
 
+    const displaySize = annotation
+      ? { width: annotation.width, height: annotation.height }
+      : annotatedImageSize;
+
     return (
       <View style={styles.container} onLayout={handleAnnotationLayout}>
-        <View ref={visualRef} collapsable={false}>
-          <Svg
-            width={annotation.width * zoomFactor}
-            height={annotation.height * zoomFactor}
-            viewBox={`0 0 ${annotation.width} ${annotation.height}`}
-            onStartShouldSetResponder={handleStartShouldSetResponder}
-            onResponderGrant={handleResponderGrant}
-            onResponderMove={handleResponderMove}
-            onResponderRelease={handleResponderRelease}
-            onResponderTerminate={handleResponderRelease}
-            style={{ marginLeft: offsetX, marginTop: offsetY }}
-          >
-            <Image
-              href={targetSrc}
-              width={annotation.width}
-              height={annotation.height}
-            />
-            {annotation.markers.map((marker, index) => {
-              const MarkerComponent = markerComponentMap[marker.typeName];
-              return MarkerComponent ? (
-                <MarkerComponent
-                  key={index}
-                  zoomFactor={zoomFactor}
-                  scaleStroke={scaleStroke}
-                  {...marker}
-                />
-              ) : null;
-            })}
+        {annotation === null && annotatedImageSize === null && (
+          <Svg>
+            <Image href={targetSrc} onLoad={handleInitialImageLoad} />
           </Svg>
-        </View>
+        )}
+        {displaySize && (
+          <View ref={visualRef} collapsable={false}>
+            <Svg
+              width={displaySize.width * zoomFactor}
+              height={displaySize.height * zoomFactor}
+              viewBox={`0 0 ${displaySize.width} ${displaySize.height}`}
+              onStartShouldSetResponder={handleStartShouldSetResponder}
+              onResponderGrant={handleResponderGrant}
+              onResponderMove={handleResponderMove}
+              onResponderRelease={handleResponderRelease}
+              onResponderTerminate={handleResponderRelease}
+              style={{ marginLeft: offsetX, marginTop: offsetY }}
+            >
+              <Image
+                href={targetSrc}
+                width={displaySize.width}
+                height={displaySize.height}
+                onLoad={handleAnnotatedImageLoad}
+              />
+              {annotation?.markers.map((marker, index) => {
+                const MarkerComponent = markerComponentMap[marker.typeName];
+                return MarkerComponent ? (
+                  <MarkerComponent
+                    key={index}
+                    zoomFactor={zoomFactor}
+                    scaleStroke={scaleStroke}
+                    {...marker}
+                  />
+                ) : null;
+              })}
+            </Svg>
+          </View>
+        )}
         {!Activator.isLicensed('MJSRN') && <Logo />}
       </View>
     );
