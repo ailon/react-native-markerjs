@@ -1,18 +1,22 @@
 import { Button, SafeAreaView, StyleSheet, View } from 'react-native';
 import {
   MarkerArea,
+  MarkerView,
   useAnnotationContext,
+  type AnnotationState,
   type ImageMarkerBaseState,
   type MarkerAreaHandle,
   type MarkerBaseState,
 } from '@markerjs/react-native-markerjs';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { testState } from '../../sample-data/sample-state';
 // import { markerIdSymbol } from '../../../src/core/MarkerBaseState';
 
 const Editor = () => {
   const { annotation, setAnnotation } = useAnnotationContext();
   const markerAreaRef = useRef<MarkerAreaHandle>(null);
+
+  const [mode, setMode] = useState<'view' | 'annotate'>('view');
 
   const handleMarkerCreate = <T extends MarkerBaseState>(
     markerType: string,
@@ -47,9 +51,16 @@ const Editor = () => {
     // }
   };
 
+  const handleAnnotationChange = (newAnnotation: AnnotationState) => {
+    console.log('Annotation changed:', newAnnotation);
+    setAnnotation(newAnnotation);
+  };
+  console.log('Editor rendered with annotation:', annotation);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topToolbar}>
+        <Button title="Edit" onPress={() => setMode('annotate')} />
         <Button
           title="Load sample state"
           onPress={() => setAnnotation(testState)}
@@ -57,66 +68,85 @@ const Editor = () => {
         <Button title="Reset state" onPress={() => setAnnotation(null)} />
       </View>
       <View style={styles.markerAreaContainer}>
-        <MarkerArea
-          ref={markerAreaRef}
-          targetSrc={require('../../assets/sample-images/landscape.jpg')}
-          annotation={annotation}
-          // scaleStroke={false}
-          onSelectedMarkerChange={handleSelectedMarkerChange}
-          onAnnotationChange={setAnnotation}
-        />
+        {mode === 'view' && (
+          <MarkerView
+            targetSrc={require('../../assets/sample-images/landscape.jpg')}
+            annotation={annotation}
+          />
+        )}
+        {mode === 'annotate' && (
+          <MarkerArea
+            ref={markerAreaRef}
+            targetSrc={require('../../assets/sample-images/landscape.jpg')}
+            annotation={annotation}
+            // scaleStroke={false}
+            onSelectedMarkerChange={handleSelectedMarkerChange}
+            onAnnotationChange={handleAnnotationChange}
+          />
+        )}
       </View>
-      <View style={styles.toolbar}>
-        <Button
-          title="🖱️"
-          onPress={() => markerAreaRef.current?.switchToSelectMode()}
-        />
-        <Button
-          title="🗑️"
-          onPress={() => markerAreaRef.current?.deleteSelectedMarker()}
-        />
-        <Button title="▭" onPress={() => handleMarkerCreate('FrameMarker')} />
-        <Button title="⬛️" onPress={() => handleMarkerCreate('CoverMarker')} />
-        <Button
-          title="🟨"
-          onPress={() => handleMarkerCreate('HighlightMarker')}
-        />
-        <Button
-          title="⭕️"
-          onPress={() => handleMarkerCreate('EllipseFrameMarker')}
-        />
-        <Button title="⬬" onPress={() => handleMarkerCreate('EllipseMarker')} />
-        <Button title="⎼" onPress={() => handleMarkerCreate('LineMarker')} />
-        <Button title="→" onPress={() => handleMarkerCreate('ArrowMarker')} />
-        <Button
-          title="📏"
-          onPress={() => handleMarkerCreate('MeasurementMarker')}
-        />
-        <Button
-          title="🖌️"
-          onPress={() => handleMarkerCreate('FreehandMarker')}
-        />
-        <Button
-          title="🖍️"
-          onPress={() => handleMarkerCreate('HighlighterMarker')}
-        />
-        <Button title="△" onPress={() => handleMarkerCreate('PolygonMarker')} />
-        <Button title="T" onPress={() => handleMarkerCreate('TextMarker')} />
-        <Button
-          title="🗨️"
-          onPress={() => handleMarkerCreate('CalloutMarker')}
-        />
-        <Button
-          title="🙂"
-          onPress={() =>
-            handleMarkerCreate('CustomImageMarker', {
-              imageType: 'svg',
-              svgString:
-                '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g fill="none"><path fill="url(#f2332id0)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id1)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id2)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id3)" fill-opacity="0.6" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id4)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id5)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id6)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id7)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><circle cx="9.017" cy="13.421" r="4.673" fill="url(#f2332id8)"/><circle cx="19.244" cy="13.943" r="4.244" fill="url(#f2332id9)"/><path fill="#fff" d="M10.42 16.224a4.206 4.206 0 1 0 0-8.411a4.206 4.206 0 0 0 0 8.411m11.148.077a4.244 4.244 0 1 0 0-8.489a4.244 4.244 0 0 0 0 8.49"/><path fill="url(#f2332idb)" d="M11 15a3 3 0 1 0 0-6a3 3 0 0 0 0 6"/><path fill="url(#f2332idc)" d="M21 15a3 3 0 1 0 0-6a3 3 0 0 0 0 6"/><path fill="url(#f2332ida)" fill-rule="evenodd" d="M10.4 18.2a1 1 0 0 1 1.4.2c.31.413 1.712 1.6 4.2 1.6s3.89-1.187 4.2-1.6a1 1 0 1 1 1.6 1.2c-.69.92-2.688 2.4-5.8 2.4s-5.11-1.48-5.8-2.4a1 1 0 0 1 .2-1.4" clip-rule="evenodd"/><defs><radialGradient id="f2332id0" cx="0" cy="0" r="1" gradientTransform="rotate(132.839 10.786 10.065)scale(37.5033)" gradientUnits="userSpaceOnUse"><stop stop-color="#fff478"/><stop offset=".475" stop-color="#ffb02e"/><stop offset="1" stop-color="#f70a8d"/></radialGradient><radialGradient id="f2332id1" cx="0" cy="0" r="1" gradientTransform="rotate(131.878 10.74 10.193)scale(38.9487)" gradientUnits="userSpaceOnUse"><stop stop-color="#fff478"/><stop offset=".475" stop-color="#ffb02e"/><stop offset="1" stop-color="#f70a8d"/></radialGradient><radialGradient id="f2332id2" cx="0" cy="0" r="1" gradientTransform="rotate(101.31 2.876 12.808)scale(17.8466 22.8581)" gradientUnits="userSpaceOnUse"><stop offset=".788" stop-color="#f59639" stop-opacity="0"/><stop offset=".973" stop-color="#ff7dce"/></radialGradient><radialGradient id="f2332id3" cx="0" cy="0" r="1" gradientTransform="matrix(-29 29 -29 -29 18 14)" gradientUnits="userSpaceOnUse"><stop offset=".315" stop-opacity="0"/><stop offset="1"/></radialGradient><radialGradient id="f2332id4" cx="0" cy="0" r="1" gradientTransform="rotate(77.692 -2.555 18.434)scale(28.1469)" gradientUnits="userSpaceOnUse"><stop offset=".508" stop-color="#7d6133" stop-opacity="0"/><stop offset="1" stop-color="#715b32"/></radialGradient><radialGradient id="f2332id5" cx="0" cy="0" r="1" gradientTransform="matrix(7.5 10.99996 -7.97335 5.4364 16.5 16.5)" gradientUnits="userSpaceOnUse"><stop stop-color="#ffb849"/><stop offset="1" stop-color="#ffb847" stop-opacity="0"/></radialGradient><radialGradient id="f2332id6" cx="0" cy="0" r="1" gradientTransform="matrix(11.49998 2 -2 11.49998 20.5 18)" gradientUnits="userSpaceOnUse"><stop stop-color="#ffa64b"/><stop offset=".9" stop-color="#ffae46" stop-opacity="0"/></radialGradient><radialGradient id="f2332id7" cx="0" cy="0" r="1" gradientTransform="rotate(43.971 -9.827 29.173)scale(59.0529)" gradientUnits="userSpaceOnUse"><stop offset=".185" stop-opacity="0"/><stop offset="1" stop-opacity="0.4"/></radialGradient><radialGradient id="f2332id8" cx="0" cy="0" r="1" gradientTransform="rotate(135 4.3 7.513)scale(9.10579 4.71285)" gradientUnits="userSpaceOnUse"><stop stop-color="#392108"/><stop offset="1" stop-color="#c87928" stop-opacity="0"/></radialGradient><radialGradient id="f2332id9" cx="0" cy="0" r="1" gradientTransform="rotate(135 9.069 9.99)scale(7.66968 4.32966)" gradientUnits="userSpaceOnUse"><stop stop-color="#392108"/><stop offset="1" stop-color="#c87928" stop-opacity="0"/></radialGradient><radialGradient id="f2332ida" cx="0" cy="0" r="1" gradientTransform="matrix(0 5.5 -8.41855 0 16 17)" gradientUnits="userSpaceOnUse"><stop offset=".348" stop-color="#241a1a"/><stop offset=".628" stop-color="#57444a"/><stop offset="1" stop-color="#4e2553"/><stop offset="1" stop-color="#502a56"/></radialGradient><linearGradient id="f2332idb" x1="16.5" x2="15.5" y1="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="#553b3e"/><stop offset="1" stop-color="#3d2432"/></linearGradient><linearGradient id="f2332idc" x1="16.5" x2="15.5" y1="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="#553b3e"/><stop offset="1" stop-color="#3d2432"/></linearGradient></defs></g></svg>',
-            } as ImageMarkerBaseState)
-          }
-        />
-      </View>
+      {mode === 'annotate' && (
+        <View style={styles.toolbar}>
+          <Button
+            title="🖱️"
+            onPress={() => markerAreaRef.current?.switchToSelectMode()}
+          />
+          <Button
+            title="🗑️"
+            onPress={() => markerAreaRef.current?.deleteSelectedMarker()}
+          />
+          <Button title="▭" onPress={() => handleMarkerCreate('FrameMarker')} />
+          <Button
+            title="⬛️"
+            onPress={() => handleMarkerCreate('CoverMarker')}
+          />
+          <Button
+            title="🟨"
+            onPress={() => handleMarkerCreate('HighlightMarker')}
+          />
+          <Button
+            title="⭕️"
+            onPress={() => handleMarkerCreate('EllipseFrameMarker')}
+          />
+          <Button
+            title="⬬"
+            onPress={() => handleMarkerCreate('EllipseMarker')}
+          />
+          <Button title="⎼" onPress={() => handleMarkerCreate('LineMarker')} />
+          <Button title="→" onPress={() => handleMarkerCreate('ArrowMarker')} />
+          <Button
+            title="📏"
+            onPress={() => handleMarkerCreate('MeasurementMarker')}
+          />
+          <Button
+            title="🖌️"
+            onPress={() => handleMarkerCreate('FreehandMarker')}
+          />
+          <Button
+            title="🖍️"
+            onPress={() => handleMarkerCreate('HighlighterMarker')}
+          />
+          <Button
+            title="△"
+            onPress={() => handleMarkerCreate('PolygonMarker')}
+          />
+          <Button title="T" onPress={() => handleMarkerCreate('TextMarker')} />
+          <Button
+            title="🗨️"
+            onPress={() => handleMarkerCreate('CalloutMarker')}
+          />
+          <Button
+            title="🙂"
+            onPress={() =>
+              handleMarkerCreate('CustomImageMarker', {
+                imageType: 'svg',
+                svgString:
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><g fill="none"><path fill="url(#f2332id0)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id1)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id2)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id3)" fill-opacity="0.6" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id4)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id5)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id6)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><path fill="url(#f2332id7)" d="M15.999 29.998c9.334 0 13.999-6.268 13.999-14c0-7.73-4.665-13.998-14-13.998C6.665 2 2 8.268 2 15.999s4.664 13.999 13.999 13.999"/><circle cx="9.017" cy="13.421" r="4.673" fill="url(#f2332id8)"/><circle cx="19.244" cy="13.943" r="4.244" fill="url(#f2332id9)"/><path fill="#fff" d="M10.42 16.224a4.206 4.206 0 1 0 0-8.411a4.206 4.206 0 0 0 0 8.411m11.148.077a4.244 4.244 0 1 0 0-8.489a4.244 4.244 0 0 0 0 8.49"/><path fill="url(#f2332idb)" d="M11 15a3 3 0 1 0 0-6a3 3 0 0 0 0 6"/><path fill="url(#f2332idc)" d="M21 15a3 3 0 1 0 0-6a3 3 0 0 0 0 6"/><path fill="url(#f2332ida)" fill-rule="evenodd" d="M10.4 18.2a1 1 0 0 1 1.4.2c.31.413 1.712 1.6 4.2 1.6s3.89-1.187 4.2-1.6a1 1 0 1 1 1.6 1.2c-.69.92-2.688 2.4-5.8 2.4s-5.11-1.48-5.8-2.4a1 1 0 0 1 .2-1.4" clip-rule="evenodd"/><defs><radialGradient id="f2332id0" cx="0" cy="0" r="1" gradientTransform="rotate(132.839 10.786 10.065)scale(37.5033)" gradientUnits="userSpaceOnUse"><stop stop-color="#fff478"/><stop offset=".475" stop-color="#ffb02e"/><stop offset="1" stop-color="#f70a8d"/></radialGradient><radialGradient id="f2332id1" cx="0" cy="0" r="1" gradientTransform="rotate(131.878 10.74 10.193)scale(38.9487)" gradientUnits="userSpaceOnUse"><stop stop-color="#fff478"/><stop offset=".475" stop-color="#ffb02e"/><stop offset="1" stop-color="#f70a8d"/></radialGradient><radialGradient id="f2332id2" cx="0" cy="0" r="1" gradientTransform="rotate(101.31 2.876 12.808)scale(17.8466 22.8581)" gradientUnits="userSpaceOnUse"><stop offset=".788" stop-color="#f59639" stop-opacity="0"/><stop offset=".973" stop-color="#ff7dce"/></radialGradient><radialGradient id="f2332id3" cx="0" cy="0" r="1" gradientTransform="matrix(-29 29 -29 -29 18 14)" gradientUnits="userSpaceOnUse"><stop offset=".315" stop-opacity="0"/><stop offset="1"/></radialGradient><radialGradient id="f2332id4" cx="0" cy="0" r="1" gradientTransform="rotate(77.692 -2.555 18.434)scale(28.1469)" gradientUnits="userSpaceOnUse"><stop offset=".508" stop-color="#7d6133" stop-opacity="0"/><stop offset="1" stop-color="#715b32"/></radialGradient><radialGradient id="f2332id5" cx="0" cy="0" r="1" gradientTransform="matrix(7.5 10.99996 -7.97335 5.4364 16.5 16.5)" gradientUnits="userSpaceOnUse"><stop stop-color="#ffb849"/><stop offset="1" stop-color="#ffb847" stop-opacity="0"/></radialGradient><radialGradient id="f2332id6" cx="0" cy="0" r="1" gradientTransform="matrix(11.49998 2 -2 11.49998 20.5 18)" gradientUnits="userSpaceOnUse"><stop stop-color="#ffa64b"/><stop offset=".9" stop-color="#ffae46" stop-opacity="0"/></radialGradient><radialGradient id="f2332id7" cx="0" cy="0" r="1" gradientTransform="rotate(43.971 -9.827 29.173)scale(59.0529)" gradientUnits="userSpaceOnUse"><stop offset=".185" stop-opacity="0"/><stop offset="1" stop-opacity="0.4"/></radialGradient><radialGradient id="f2332id8" cx="0" cy="0" r="1" gradientTransform="rotate(135 4.3 7.513)scale(9.10579 4.71285)" gradientUnits="userSpaceOnUse"><stop stop-color="#392108"/><stop offset="1" stop-color="#c87928" stop-opacity="0"/></radialGradient><radialGradient id="f2332id9" cx="0" cy="0" r="1" gradientTransform="rotate(135 9.069 9.99)scale(7.66968 4.32966)" gradientUnits="userSpaceOnUse"><stop stop-color="#392108"/><stop offset="1" stop-color="#c87928" stop-opacity="0"/></radialGradient><radialGradient id="f2332ida" cx="0" cy="0" r="1" gradientTransform="matrix(0 5.5 -8.41855 0 16 17)" gradientUnits="userSpaceOnUse"><stop offset=".348" stop-color="#241a1a"/><stop offset=".628" stop-color="#57444a"/><stop offset="1" stop-color="#4e2553"/><stop offset="1" stop-color="#502a56"/></radialGradient><linearGradient id="f2332idb" x1="16.5" x2="15.5" y1="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="#553b3e"/><stop offset="1" stop-color="#3d2432"/></linearGradient><linearGradient id="f2332idc" x1="16.5" x2="15.5" y1="8" y2="15" gradientUnits="userSpaceOnUse"><stop stop-color="#553b3e"/><stop offset="1" stop-color="#3d2432"/></linearGradient></defs></g></svg>',
+              } as ImageMarkerBaseState)
+            }
+          />
+        </View>
+      )}
     </SafeAreaView>
   );
 };

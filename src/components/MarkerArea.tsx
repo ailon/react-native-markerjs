@@ -332,6 +332,17 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       }
     };
 
+    // backup for when onLoad doesn't fire on Android in some cases
+    const handleInitialImageLayout = (ev: LayoutChangeEvent) => {
+      if (annotation === null) {
+        const { width, height } = ev.nativeEvent.layout;
+        setAnnotatedImageSize({ width, height });
+        if (onAnnotationChange) {
+          onAnnotationChange(createNewAnnotationState(width, height));
+        }
+      }
+    };
+
     const handleAnnotatedImageLoad = (
       ev: NativeSyntheticEvent<ImageLoadEventData>
     ) => {
@@ -372,7 +383,11 @@ const MarkerArea = forwardRef<MarkerAreaHandle, MarkerAreaProps>(
       >
         {annotation === null && (
           <Svg>
-            <Image href={targetSrc} onLoad={handleInitialImageLoad} />
+            <Image
+              href={targetSrc}
+              onLayout={handleInitialImageLayout}
+              onLoad={handleInitialImageLoad}
+            />
           </Svg>
         )}
         {annotation && (

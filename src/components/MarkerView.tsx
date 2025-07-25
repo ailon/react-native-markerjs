@@ -108,6 +108,14 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
       setLayoutSize({ width, height });
     };
 
+    // backup for when onLoad doesn't fire on Android in some cases
+    const handleInitialImageLayout = (ev: LayoutChangeEvent) => {
+      if (annotation === null) {
+        const { width, height } = ev.nativeEvent.layout;
+        setAnnotatedImageSize({ width, height });
+      }
+    };
+
     const handleInitialImageLoad = (
       ev: NativeSyntheticEvent<ImageLoadEventData>
     ) => {
@@ -229,7 +237,11 @@ const MarkerView = forwardRef<MarkerViewHandle, MarkerViewProps>(
       <View style={styles.container} onLayout={handleAnnotationLayout}>
         {annotation === null && annotatedImageSize === null && (
           <Svg>
-            <Image href={targetSrc} onLoad={handleInitialImageLoad} />
+            <Image
+              href={targetSrc}
+              onLayout={handleInitialImageLayout}
+              onLoad={handleInitialImageLoad}
+            />
           </Svg>
         )}
         {displaySize && (
