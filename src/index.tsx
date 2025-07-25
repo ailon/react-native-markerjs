@@ -6,7 +6,7 @@ export { MarkerArea, type MarkerAreaHandle, MarkerView, type MarkerViewHandle };
 export { Activator } from './core/Activator';
 
 export type { AnnotationState } from './core/AnnotationState';
-export type { MarkerBaseState } from './core/MarkerBaseState';
+export { markerIdSymbol, type MarkerBaseState } from './core/MarkerBaseState';
 export type { RectangularBoxMarkerBaseState } from './core/RectangularBoxMarkerBaseState';
 export type { ShapeOutlineMarkerBaseState } from './core/ShapeOutlineMarkerBaseState';
 export type { LinearMarkerBaseState } from './core/LinearMarkerBaseState';
