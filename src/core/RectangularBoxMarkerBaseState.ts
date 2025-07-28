@@ -30,12 +30,18 @@ export interface RectangularBoxMarkerBaseState extends MarkerBaseState {
    * Visual transform matrix.
    *
    * Used to correctly position and rotate marker.
+   *
+   * @remarks
+   * Currently it isn't used in the React Native version but is included for compatibility with the web version.
    */
   visualTransformMatrix?: ITransformMatrix;
   /**
    * Container transform matrix.
    *
    * Used to correctly position and rotate marker.
+   *
+   * @remarks
+   * Currently it isn't used in the React Native version but is included for compatibility with the web version.
    */
   containerTransformMatrix?: ITransformMatrix;
 }

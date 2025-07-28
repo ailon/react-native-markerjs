@@ -1,3 +1,8 @@
+/**
+ * @module marker.js for React Native
+ * @category API Reference
+ */
+
 import MarkerArea, {
   type MarkerAreaHandle,
   type MarkerAreaProps,

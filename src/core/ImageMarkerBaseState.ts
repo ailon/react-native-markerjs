@@ -2,8 +2,6 @@ import { type RectangularBoxMarkerBaseState } from './RectangularBoxMarkerBaseSt
 
 /**
  * The type of image (svg or bitmap).
- *
- * Used in {@link Core!ImageMarkerBase | ImageMarkerBase } and its descendants.
  */
 export type ImageType = 'svg' | 'bitmap';
 

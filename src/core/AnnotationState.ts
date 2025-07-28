@@ -3,11 +3,8 @@ import type { MarkerBaseState } from './MarkerBaseState';
 /**
  * Represents the state of the annotation.
  *
- * The state is returned by {@link Editor!MarkerArea.getState | MarkerArea.getState()} and can be used to
- * restore the annotation in {@link Editor!MarkerArea | MarkerArea}
- * with {@link Editor!MarkerArea.restoreState | MarkerArea.restoreState()}
- * or passed to {@link Viewer!MarkerView.show | MakerView.show()}
- * or {@link Renderer!Renderer.rasterize | Renderer.rasterize()}.
+ * The state is used to store and pass around the annotation data.
+ * Set it as the `annotation` prop of the {@link MarkerArea} and {@link MarkerView} components.
  */
 export interface AnnotationState {
   /**
@@ -29,8 +26,6 @@ export interface AnnotationState {
   /**
    * Default SVG filter to apply to markers in the annotation.
    * (e.g. drop shadow, outline, glow)
-   *
-   * @since 3.2.0
    */
   defaultFilter?: string;
 

@@ -1,4 +1,9 @@
+/**
+ * Symbol used to store unique marker ID.
+ * This ID is used to identify markers in the annotation when updating, etc..
+ */
 export const markerIdSymbol = Symbol('id');
+
 /**
  * Represents marker's state used to save and restore state.
  *
@@ -31,6 +36,9 @@ export interface MarkerBaseState {
    * Marker's opacity.
    */
   opacity?: number;
-
+  /**
+   * Internal unique marker ID.
+   * This ID is used to identify markers in the annotation when updating, etc.
+   */
   [markerIdSymbol]?: string;
 }
