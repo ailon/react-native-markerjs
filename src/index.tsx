@@ -1,7 +1,20 @@
-import MarkerArea, { type MarkerAreaHandle } from './components/MarkerArea';
-import MarkerView, { type MarkerViewHandle } from './components/MarkerView';
+import MarkerArea, {
+  type MarkerAreaHandle,
+  type MarkerAreaProps,
+} from './components/MarkerArea';
+import MarkerView, {
+  type MarkerViewHandle,
+  type MarkerViewProps,
+} from './components/MarkerView';
 
-export { MarkerArea, type MarkerAreaHandle, MarkerView, type MarkerViewHandle };
+export {
+  MarkerArea,
+  type MarkerAreaHandle,
+  type MarkerAreaProps,
+  MarkerView,
+  type MarkerViewHandle,
+  type MarkerViewProps,
+};
 
 export { Activator } from './core/Activator';
 
