@@ -1,7 +1,7 @@
 import type { AnnotationState } from '../core/AnnotationState';
 import React, { createContext, useContext } from 'react';
 
-type AnnotationContextType = {
+export type AnnotationContextType = {
   annotation: AnnotationState | null;
   setAnnotation: (newAnnotation: AnnotationState | null) => void;
 };

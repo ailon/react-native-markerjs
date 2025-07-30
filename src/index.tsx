@@ -34,9 +34,15 @@ export type { PolygonMarkerState } from './core/PolygonMarkerState';
 export type { TextMarkerState } from './core/TextMarkerState';
 export type { ArrowMarkerState, ArrowType } from './core/ArrowMarkerState';
 
+export type { IPoint } from './core/IPoint';
+export type { ITransformMatrix } from './core/TransformMatrix';
+export type { ImageType } from './core/ImageMarkerBaseState';
+export type { FontSize } from './core/FontSize';
+
 export {
   AnnotationProvider,
   useAnnotationContext,
+  type AnnotationContextType,
 } from './contexts/AnnotationContext';
 
 // state helpers
