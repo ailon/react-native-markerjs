@@ -16,8 +16,6 @@ npm install @markerjs/react-native-markerjs
 
 **marker.js for React Native** consists of two main components: `MarkerArea` (the editor) and `MarkerView` (the viewer).
 
-_more details TBD_
-
 ### MarkerArea (The Editor)
 
 Import `MarkerArea` from `@markerjs/react-native-markerjs`:
@@ -25,6 +23,8 @@ Import `MarkerArea` from `@markerjs/react-native-markerjs`:
 ```js
 import { MarkerArea } from '@markerjs/react-native-markerjs';
 ```
+
+Add the `MarkerArea` component to your app, providing it with a target image source and an initial annotation state. You can use the `ref` prop to get a reference to the `MarkerArea` instance, which allows you to interact with the component programmatically (initiating marker creation, etc.).
 
 ```jsx
 <MarkerArea
@@ -35,15 +35,15 @@ import { MarkerArea } from '@markerjs/react-native-markerjs';
 />
 ```
 
-_TBD_
+Refer to the [Quick Start Guide](https://markerjs.com/docs-rn/documents/Guides_and_tutorials.Getting_started.html) for more details on how to start using marker.js for React Native.
 
 ## Demos
 
-_Coming soon..._
+You can find a demo app demonstrating marker creation, editing, displaying annotations, and rendering annotated images [here](https://github.com/ailon/react-native-markerjs-demo).
 
 ## More docs and tutorials
 
-_Coming soon..._
+Check out the [marker.js for React Native documentation](https://markerjs.com/docs-rn/) for more details on how to use the library, including guides and tutorials.
 
 ## License
 
